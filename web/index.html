@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CareQueue | Điều phối khám bệnh</title>
+  <style>
+    :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#172b3a;background:#f3f7f8;font-synthesis:none;font-weight:400;--navy:#123246;--teal:#087f8c;--mint:#dff4ef;--line:#e3ebee;--muted:#6e818e;--red:#c94d54;--shadow:0 12px 34px #173f5010}
+    *{box-sizing:border-box}body{margin:0}.shell{max-width:1440px;margin:auto;padding:28px 34px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.brand{display:flex;align-items:center;gap:13px}.mark{width:46px;height:46px;border-radius:15px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:25px;font-weight:700}.brand h1{font-size:18px;margin:0;color:var(--navy)}.brand p{font-size:12px;color:var(--muted);margin:4px 0 0}.live{font-size:12px;color:#21826f;background:var(--mint);border-radius:99px;padding:9px 13px}.live:before{content:"";display:inline-block;width:7px;height:7px;background:#32a986;border-radius:100%;margin-right:8px}.intro{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px}.intro h2{font-size:27px;margin:0 0 6px;color:var(--navy);letter-spacing:-.5px}.intro p{margin:0;color:var(--muted);font-size:14px}.date{font-size:13px;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.stat{padding:18px 20px}.stat-label{font-size:12px;color:var(--muted)}.stat-value{font-size:27px;font-weight:700;margin-top:7px;color:var(--navy)}.stat-value.emergency{color:var(--red)}.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px;align-items:start}.left,.right{display:grid;gap:18px}.panel{padding:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.panel-head h3{margin:0;font-size:15px;color:var(--navy)}.hint{font-size:11px;color:var(--muted)}label{display:block;font-size:12px;font-weight:600;color:#435b68;margin:13px 0 6px}input,select,textarea{width:100%;border:1px solid #dce6e9;border-radius:9px;padding:10px 11px;font:inherit;font-size:13px;color:#223d4c;background:white;outline:none}input:focus,select:focus,textarea:focus{border-color:#48a4a9;box-shadow:0 0 0 3px #48a4a91b}textarea{min-height:66px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:650;font-size:12px;cursor:pointer;transition:.15s}.btn:hover{filter:brightness(.96);transform:translateY(-1px)}.primary{background:var(--teal);color:white;width:100%;margin-top:15px}.navy{background:var(--navy);color:white}.soft{background:#edf4f5;color:#355463}.danger{background:#fff0f0;color:#ae4148}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions .btn{width:100%}.callout{background:#eff8f6;border:1px solid #d9efea;padding:13px;border-radius:11px;margin-bottom:14px}.callout span{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}.callout strong{font-size:15px;color:var(--navy)}.toolbar{display:flex;gap:9px;align-items:center}.toolbar input{width:190px}.toolbar select{width:145px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#83949d;padding:10px 9px;border-bottom:1px solid var(--line)}td{padding:12px 9px;font-size:12px;border-bottom:1px solid #edf1f2;color:#405764}tbody tr:last-child td{border-bottom:0}.ticket{font-weight:700;color:var(--navy)}.badge{font-size:10px;padding:5px 8px;border-radius:99px;background:#eef3f5;color:#607681}.badge.urgent{background:#fff0ef;color:#bb454d}.badge.wait{background:#fff7e7;color:#a5751e}.empty{padding:28px 12px;text-align:center;color:#83949d;font-size:13px}.history{display:grid;gap:0}.history-item{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #edf1f2;font-size:12px}.history-item:last-child{border-bottom:0}.history-item time{font-size:11px;color:#84949d}.history-item strong{color:#294553}.history-item span{color:var(--muted)}.notice{position:fixed;right:25px;bottom:25px;background:#153c4d;color:#fff;padding:13px 17px;border-radius:10px;box-shadow:var(--shadow);font-size:13px;opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;max-width:min(420px,calc(100vw - 40px));z-index:4}.notice.show{opacity:1;transform:translateY(0)}.notice.error{background:#a83f48}.foot{font-size:11px;color:#91a0a6;text-align:center;margin-top:22px}
+    @media(max-width:980px){.layout{grid-template-columns:300px minmax(0,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.shell{padding:18px 14px}.topbar{margin-bottom:22px}.intro{align-items:start;gap:14px;flex-direction:column}.intro h2{font-size:23px}.layout{grid-template-columns:1fr}.left{order:2}.right{order:1}.toolbar{flex-wrap:wrap}.toolbar input,.toolbar select{width:100%;flex:1}.panel{padding:16px}.stats{gap:9px}.stat{padding:14px}.stat-value{font-size:23px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar"><div class="brand"><div class="mark">+</div><div><h1>CareQueue</h1><p>Hệ thống điều phối khám bệnh</p></div></div><div class="live">Hệ thống đang hoạt động</div></header>
+    <section class="intro"><div><h2>Trung tâm điều phối bệnh nhân</h2><p>Tiếp nhận, phân luồng và gọi khám theo mức độ ưu tiên.</p></div><div class="date" id="today"></div></section>
+    <section class="stats">
+      <div class="stat"><div class="stat-label">Đang chờ khám</div><div class="stat-value" id="waitingCount">0</div></div>
+      <div class="stat"><div class="stat-label">Ca cấp cứu đang chờ</div><div class="stat-value emergency" id="emergencyCount">0</div></div>
+      <div class="stat"><div class="stat-label">Đang khám</div><div class="stat-value" id="consultCount">0</div></div>
+      <div class="stat"><div class="stat-label">Đã tiếp nhận hôm nay</div><div class="stat-value" id="totalCount">0</div></div>
+    </section>
+    <section class="layout">
+      <div class="left">
+        <section class="panel"><div class="panel-head"><h3>Tiếp nhận bệnh nhân</h3><span class="hint">Cấp mã tự động</span></div>
+          <form id="registerForm">
+            <label for="name">Họ và tên</label><input id="name" name="name" required maxlength="100" placeholder="Nhập tên bệnh nhân">
+            <div class="row"><div><label for="age">Tuổi</label><input id="age" name="age" type="number" min="0" max="120" required placeholder="Tuổi"></div><div><label for="triage">Mức ưu tiên</label><select id="triage" name="triage"><option value="5">Mức 5 · Thông thường</option><option value="4">Mức 4 · Ít khẩn</option><option value="3">Mức 3 · Khẩn</option><option value="2">Mức 2 · Cấp cứu</option><option value="1">Mức 1 · Nguy kịch</option></select></div></div>
+            <label for="symptom">Triệu chứng</label><textarea id="symptom" name="symptom" required maxlength="500" placeholder="Mô tả triệu chứng ban đầu"></textarea>
+            <label for="department">Phòng khám</label><select id="department" name="department"><option value="">Tự động phân luồng</option></select>
+            <button class="btn primary" type="submit">＋ Tiếp nhận và cấp số</button>
+          </form>
+        </section>
+        <section class="panel"><div class="panel-head"><h3>Gọi khám tiếp theo</h3><span class="hint">Cấp cứu trước · FIFO</span></div>
+          <div class="callout"><span>BỆNH NHÂN VỪA ĐƯỢC GỌI</span><strong id="lastCalled">Chưa có lượt gọi</strong></div>
+          <button class="btn navy" id="callNext" style="width:100%">Gọi bệnh nhân tiếp theo</button>
+        </section>
+        <section class="panel"><div class="panel-head"><h3>Cập nhật trạng thái</h3></div>
+          <label for="ticketAction">Mã phiếu bệnh nhân</label><input id="ticketAction" placeholder="Ví dụ: BN0001">
+          <div class="actions" style="margin-top:10px"><button class="btn soft" id="completeBtn">Hoàn tất lượt khám</button><button class="btn danger" id="transferBtn">Chuyển cấp cứu</button></div>
+        </section>
+      </div>
+      <div class="right">
+        <section class="panel"><div class="panel-head"><h3>Danh sách đang chờ</h3><div class="toolbar"><input id="search" placeholder="Tìm mã hoặc tên..."><select id="filter"><option value="all">Tất cả mức độ</option><option value="emergency">Cấp cứu</option><option value="regular">Khám thường</option></select></div></div>
+          <div class="table-wrap"><table><thead><tr><th>Mã phiếu</th><th>Bệnh nhân</th><th>Khoa</th><th>Ưu tiên</th><th>Chờ dự kiến</th><th>Tiếp nhận</th></tr></thead><tbody id="waitingTable"></tbody></table><div class="empty" id="emptyWaiting" hidden>Chưa có bệnh nhân trong hàng đợi.</div></div>
+        </section>
+        <section class="panel"><div class="panel-head"><h3>Lịch sử gọi khám</h3><span class="hint">Mới nhất trước · tối đa 30 lượt</span></div><div class="history" id="historyList"></div><div class="empty" id="emptyHistory" hidden>Chưa có lượt gọi khám.</div></section>
+      </div>
+    </section>
+    <div class="foot">Mô hình học tập về Queue, Deque và Priority Queue · Dữ liệu lưu trong phiên chạy hiện tại</div>
+  </main>
+  <div class="notice" id="notice"></div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let state = {patients:[], waiting:[], history:[], departments:[]};
+    $('today').textContent = new Intl.DateTimeFormat('vi-VN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(new Date());
+    function notify(message,error=false){const n=$('notice');n.textContent=message;n.className='notice show'+(error?' error':'');clearTimeout(notify.timer);notify.timer=setTimeout(()=>n.className='notice',3200)}
+    async function request(url, data){const options=data?{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams(data)}:{};const response=await fetch(url,options);const result=await response.json();if(!response.ok)throw new Error(result.message||result.error||'Yêu cầu không thành công.');return result}
+    async function refresh(){try{state=await request('/api/state');render()}catch(error){notify('Không kết nối được máy chủ C++. Hãy kiểm tra cửa sổ chương trình.',true)}}
+    function render(){
+      const patients=state.patients||[];const waiting=state.waiting||[];
+      $('waitingCount').textContent=waiting.length;$('emergencyCount').textContent=waiting.filter(p=>p.emergency).length;
+      $('consultCount').textContent=patients.filter(p=>p.status==='Dang kham').length;$('totalCount').textContent=patients.length;
+      const department=$('department');const selected=department.value;department.innerHTML='<option value="">Tự động phân luồng</option>'+(state.departments||[]).map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');department.value=selected;
+      const query=$('search').value.trim().toLocaleLowerCase('vi');const filter=$('filter').value;
+      const visible=waiting.filter(p=>{const matches=(p.ticket+' '+p.name+' '+p.department).toLocaleLowerCase('vi').includes(query);return matches&&(filter==='all'||(filter==='emergency'?p.emergency:!p.emergency))});
+      $('waitingTable').innerHTML=visible.map(p=>`<tr><td class="ticket">${escapeHtml(p.ticket)}</td><td>${escapeHtml(p.name)}<div class="hint">${p.age} tuổi · ${escapeHtml(p.symptom)}</div></td><td>${escapeHtml(p.department)}</td><td><span class="badge ${p.emergency?'urgent':'wait'}">${p.emergency?'Cấp cứu':'Mức '+p.triageLevel}</span></td><td>${p.waitMinutes??'—'} phút</td><td>${escapeHtml(p.arrivalTime)}</td></tr>`).join('');
+      $('emptyWaiting').hidden=visible.length>0;
+      const history=state.history||[];$('historyList').innerHTML=history.map(h=>`<div class="history-item"><time>${escapeHtml(h.calledAt)}</time><strong>${escapeHtml(h.ticket)} · ${escapeHtml(h.name)}</strong><span>${escapeHtml(h.department)}${h.emergency?' · Cấp cứu':''}</span></div>`).join('');$('emptyHistory').hidden=history.length>0;
+    }
+    function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    $('registerForm').addEventListener('submit',async event=>{event.preventDefault();const data=Object.fromEntries(new FormData(event.currentTarget));try{const result=await request('/api/register',data);notify(result.message);event.currentTarget.reset();await refresh()}catch(error){notify(error.message,true)}});
+    $('callNext').addEventListener('click',async()=>{try{const result=await request('/api/call-next',{});notify(result.message,!result.ok);if(result.ok)$('lastCalled').textContent=result.message;await refresh()}catch(error){notify(error.message,true)}});
+    $('completeBtn').addEventListener('click',async()=>{try{const result=await request('/api/complete',{ticket:$('ticketAction').value.trim()});notify(result.message,!result.ok);if(result.ok){$('ticketAction').value='';await refresh()}}catch(error){notify(error.message,true)}});
+    $('transferBtn').addEventListener('click',async()=>{try{const result=await request('/api/transfer',{ticket:$('ticketAction').value.trim(),triage:'1'});notify(result.message,!result.ok);if(result.ok)await refresh()}catch(error){notify(error.message,true)}});
+    $('search').addEventListener('input',render);$('filter').addEventListener('change',render);refresh();setInterval(refresh,5000);
+  </script>
+</body>
+</html>
