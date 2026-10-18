@@ -1,4 +1,6 @@
-# Hệ thống xếp hàng khám bệnh & cấp cứu
+# CareQueue V2 — Hệ thống xếp hàng khám bệnh & cấp cứu
+
+Phiên bản giao diện V2 có bảng điều phối mới, thống kê hàng đợi, bộ lọc hồ sơ, tiếp nhận nhanh, gọi lượt theo khoa và lịch sử gọi gần đây. Giao diện chạy trên trình duyệt và kết nối máy chủ C++17 hiện có.
 
 Ứng dụng web chạy cục bộ hoặc triển khai bằng Docker. Giao diện HTML/CSS/JavaScript gọi máy chủ C++17; logic tiếp tục dùng Queue mảng vòng tự cài đặt, Priority Queue dạng heap và Deque cho lịch sử gọi.
 
