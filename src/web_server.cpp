@@ -234,7 +234,7 @@ void handleRequest(Socket client, HospitalSystem& system) {
             sendResponse(client, 200, "application/json", "{\"ok\":true,\"message\":\"Da tiep nhan " +
                          jsonEscape(patient.ticket) + "\"}");
         } else if (request.path == "/api/call-next") {
-            const auto patient = system.callNextPatient();
+            const auto patient = system.callNextPatient(field(form, "department"));
             if (!patient) { sendResponse(client, 200, "application/json", "{\"ok\":false,\"message\":\"Khong co benh nhan dang cho.\"}"); return; }
             sendResponse(client, 200, "application/json", "{\"ok\":true,\"message\":\"Moi " +
                          jsonEscape(patient->name) + " (" + jsonEscape(patient->ticket) + ") den khoa " +
@@ -298,7 +298,8 @@ int main() {
         return 1;
     }
 
-    HospitalSystem system;
+    const char* databasePath = std::getenv("HOSPITAL_DB");
+    HospitalSystem system(databasePath == nullptr || *databasePath == '\0' ? "hospital.db" : databasePath);
     std::cout << "Web app dang chay tren cong " << port << " (HOST=" << bindHost << ")\n"
               << "Nhan Ctrl+C de dung. Hay chay chuong trinh tu thu muc du an.\n";
     for (;;) {

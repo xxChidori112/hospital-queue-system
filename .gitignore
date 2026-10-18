@@ -1,5 +1,8 @@
 /build/
 *.exe
 *.o
+*.db
+*.db-shm
+*.db-wal
 .vscode/
 .vs/

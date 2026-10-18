@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <vector>
 
+struct sqlite3;
+
 enum class PatientStatus { Waiting, InConsultation, Completed };
 
 struct Patient {
@@ -52,12 +54,15 @@ struct CallRecord {
 
 class HospitalSystem {
 public:
-    HospitalSystem();
+    explicit HospitalSystem(const std::string& databasePath = "hospital.db");
+    ~HospitalSystem();
+    HospitalSystem(const HospitalSystem&) = delete;
+    HospitalSystem& operator=(const HospitalSystem&) = delete;
 
     Patient registerPatient(std::string name, int age, std::string symptom,
                             int triageLevel, std::string department = "");
     bool transferToEmergency(const std::string& ticket, int triageLevel = 1);
-    std::optional<Patient> callNextPatient();
+    std::optional<Patient> callNextPatient(const std::string& department = "");
     bool completeConsultation(const std::string& ticket);
 
     [[nodiscard]] std::vector<Patient> waitingPatients() const;
@@ -74,7 +79,12 @@ public:
 private:
     bool isCurrentWaitingEntry(const WaitingEntry& entry) const;
     void enqueuePatient(Patient& patient);
-    std::optional<WaitingEntry> takeNextRegularEntry();
+    std::optional<WaitingEntry> takeNextRegularEntry(const std::string& department);
+    void initializeDatabase(const std::string& databasePath);
+    void loadDatabase();
+    void savePatient(const Patient& patient);
+    void saveCall(const CallRecord& record);
+    void executeSql(const char* sql);
     std::string inferDepartment(const std::string& symptom) const;
     int serviceMinutes(const std::string& department) const;
 
@@ -86,4 +96,5 @@ private:
     std::uint64_t nextTicketNumber_ = 1;
     std::uint64_t nextArrivalOrder_ = 1;
     std::size_t historyLimit_ = 30;
+    sqlite3* database_ = nullptr;
 };
