@@ -36,6 +36,8 @@
     .university-logo{display:block;width:64px;height:64px;object-fit:contain;flex-shrink:0;margin-left:8px;border-radius:50%}
     @media(max-width:800px){.university-logo{width:52px;height:52px;margin-left:0}.sidebar{gap:12px}}
     @media(max-width:550px){.sidebar{justify-content:space-between}.university-logo{width:48px;height:48px}.brand-caption{font-size:8px}}
+    :root{font-family:"Segoe UI",Arial,sans-serif;font-synthesis:weight}
+    button,input,select,textarea,option{font-family:inherit}
   </style>
 </head>
 <body>
@@ -95,17 +97,18 @@
     function toast(message,error=false){const el=$('toast');el.textContent=message;el.className='toast show'+(error?' error':'');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.className='toast',3300)}
     async function request(url,data){const options=data?{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams(data)}:{};const response=await fetch(url,options);const result=await response.json();if(!response.ok)throw new Error(result.message||result.error||'Yêu cầu không thành công.');return result}
     function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-    function fillDepartments(id,label){const select=$(id),value=select.value;select.innerHTML=`<option value="">${label}</option>`+(state.departments||[]).map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');select.value=value}
+    function departmentLabel(value){return ({'Kham tong quat':'Khám tổng quát','Tim mach':'Tim mạch','Noi tiet':'Nội tiết','Nhi':'Nhi','Chan thuong':'Chấn thương'})[value]||value}
+    function fillDepartments(id,label){const select=$(id),value=select.value;select.innerHTML=`<option value="">${label}</option>`+(state.departments||[]).map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(departmentLabel(d))}</option>`).join('');select.value=value}
     function render(){
       const patients=state.patients||[],waiting=state.waiting||[];
       $('waitingCount').textContent=waiting.length;$('emergencyCount').textContent=waiting.filter(p=>p.emergency).length;$('consultCount').textContent=patients.filter(p=>p.status==='Dang kham').length;$('totalCount').textContent=patients.length;
       fillDepartments('department','Tự động phân luồng');fillDepartments('callDepartment','Tất cả khoa');fillDepartments('departmentFilter','Tất cả khoa');
       const query=$('search').value.trim().toLocaleLowerCase('vi'),dept=$('departmentFilter').value,priority=$('priorityFilter').value,status=$('statusFilter').value;
-      const visible=patients.filter(p=>{const search=(p.ticket+' '+p.name+' '+p.department+' '+p.symptom).toLocaleLowerCase('vi').includes(query);const byDept=!dept||p.department===dept;const byPriority=!priority||p.triageLevel===Number(priority);const key=p.status==='Dang cho'?'waiting':p.status==='Dang kham'?'consult':'done';return search&&byDept&&byPriority&&(status==='all'||key===status)});
+      const visible=patients.filter(p=>{const search=(p.ticket+' '+p.name+' '+p.department+' '+departmentLabel(p.department)+' '+p.symptom).toLocaleLowerCase('vi').includes(query);const byDept=!dept||p.department===dept;const byPriority=!priority||p.triageLevel===Number(priority);const key=p.status==='Dang cho'?'waiting':p.status==='Dang kham'?'consult':'done';return search&&byDept&&byPriority&&(status==='all'||key===status)});
       $('queueLabel').textContent=`${visible.length} / ${patients.length} hồ sơ`;
-      $('patientRows').innerHTML=visible.map(p=>{const levelClass=p.emergency?'urgent':p.triageLevel===3?'high':'';const wait=p.waitMinutes===null?'—':`${p.waitMinutes} phút`;return `<tr><td class="ticket">${escapeHtml(p.ticket)}</td><td><div class="patient-name">${escapeHtml(p.name)}</div><div class="patient-meta">${p.age} tuổi · ${escapeHtml(p.symptom)}</div></td><td class="dept">${escapeHtml(p.department)}</td><td><span class="priority ${levelClass}">${p.emergency?'CẤP CỨU':'MỨC '+p.triageLevel}</span></td><td class="state">${escapeHtml(p.status)}</td><td class="wait-time">${wait}</td><td>${escapeHtml(p.arrivalTime)}</td></tr>`}).join('');
+      $('patientRows').innerHTML=visible.map(p=>{const levelClass=p.emergency?'urgent':p.triageLevel===3?'high':'';const wait=p.waitMinutes===null?'—':`${p.waitMinutes} phút`;return `<tr><td class="ticket">${escapeHtml(p.ticket)}</td><td><div class="patient-name">${escapeHtml(p.name)}</div><div class="patient-meta">${p.age} tuổi · ${escapeHtml(p.symptom)}</div></td><td class="dept">${escapeHtml(departmentLabel(p.department))}</td><td><span class="priority ${levelClass}">${p.emergency?'CẤP CỨU':'MỨC '+p.triageLevel}</span></td><td class="state">${escapeHtml(p.status)}</td><td class="wait-time">${wait}</td><td>${escapeHtml(p.arrivalTime)}</td></tr>`}).join('');
       $('emptyPatients').hidden=visible.length>0;
-      const history=state.history||[];$('historyRows').innerHTML=history.map(h=>`<div class="history-row"><time class="history-time">${escapeHtml(h.calledAt)}</time><div><div class="history-patient">${escapeHtml(h.ticket)} · ${escapeHtml(h.name)}</div><div class="patient-meta">${h.emergency?'Ưu tiên cấp cứu':''}</div></div><div class="history-dept">${escapeHtml(h.department)}</div></div>`).join('');$('emptyHistory').hidden=history.length>0;
+      const history=state.history||[];$('historyRows').innerHTML=history.map(h=>`<div class="history-row"><time class="history-time">${escapeHtml(h.calledAt)}</time><div><div class="history-patient">${escapeHtml(h.ticket)} · ${escapeHtml(h.name)}</div><div class="patient-meta">${h.emergency?'Ưu tiên cấp cứu':''}</div></div><div class="history-dept">${escapeHtml(departmentLabel(h.department))}</div></div>`).join('');$('emptyHistory').hidden=history.length>0;
     }
     function connection(online){$('connectionStatus').classList.toggle('offline',!online);$('connectionText').textContent=online?'Đã kết nối':'Mất kết nối';$('connectionSide').textContent=online?'Đã kết nối':'Mất kết nối'}
     async function refresh(){try{state=await request('/api/state');render();connection(true)}catch(error){connection(false)}}
