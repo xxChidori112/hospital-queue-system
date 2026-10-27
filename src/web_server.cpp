@@ -246,9 +246,9 @@ void handleRequest(Socket client, HospitalSystem& system) {
             sendResponse(client, 200, "text/html", html.str());
             return;
         }
-        if (request.method == "GET" && request.path == "/waiting") {
-            std::ifstream file("web/waiting.html", std::ios::binary);
-            if (!file) { sendResponse(client, 404, "text/plain", "Khong tim thay man hinh cho."); return; }
+        if (request.method == "GET" && (request.path == "/waiting" || request.path == "/queue-demo")) {
+            std::ifstream file(request.path == "/waiting" ? "web/waiting.html" : "web/queue-demo.html", std::ios::binary);
+            if (!file) { sendResponse(client, 404, "text/plain", "Khong tim thay trang hien thi."); return; }
             std::ostringstream html;
             html << file.rdbuf();
             sendResponse(client, 200, "text/html", html.str());

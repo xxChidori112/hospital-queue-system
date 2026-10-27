@@ -172,10 +172,14 @@ byId('btn-hero-queue').addEventListener('click',()=>scrollToId('panel-queue'));
 byId('dispatch-dept').addEventListener('change',render);
 function clock(){const now=new Date();byId('live-clock').textContent=now.toLocaleTimeString('vi-VN');byId('header-clock').textContent=now.toLocaleString('vi-VN');}
 const waitingDialog = byId('waiting-dialog');
-byId('btn-waiting-screen').addEventListener('click',()=>{
-  byId('waiting-frame').src='/waiting';
+function openDisplay(url,title,frameTitle) {
+  byId('waiting-dialog-title').textContent=title;
+  byId('waiting-frame').title=frameTitle;
+  byId('waiting-frame').src=url;
   waitingDialog.showModal();
-});
+}
+byId('btn-waiting-screen').addEventListener('click',()=>openDisplay('/waiting','Màn hình chờ khám','Số thứ tự chờ khám theo phòng'));
+byId('btn-queue-demo').addEventListener('click',()=>openDisplay('/queue-demo','Minh họa Queue · CareQueue UTC2','Mô phỏng Queue, Priority Queue và Deque'));
 byId('close-waiting-screen').addEventListener('click',()=>waitingDialog.close());
 waitingDialog.addEventListener('close',()=>byId('waiting-frame').removeAttribute('src'));
 clock();setInterval(clock,1000);refresh();setInterval(refresh,5000);

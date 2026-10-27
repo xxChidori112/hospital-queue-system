@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minh họa Queue | CareQueue UTC2</title>
+  <style>
+    :root{font-family:"Segoe UI",Arial,sans-serif;color:#17344c;background:#eef7fc;line-height:1.6}
+    *{box-sizing:border-box}body{margin:0}button,select,a{font:inherit}button,select{cursor:pointer}button:disabled{cursor:default;opacity:.45}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #e6ae22;outline-offset:3px}
+    header{padding:22px clamp(18px,4vw,48px);background:#062c51;color:white;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}header strong{font-size:18px}header p{font-size:13px;color:#bddde9;margin:4px 0 0}header a{color:white;font-size:13px}
+    main{max-width:1400px;margin:auto;padding:28px clamp(16px,4vw,48px) 40px}h1{font-size:clamp(25px,4vw,36px);margin:0;line-height:1.4}h2{font-size:19px;margin:0}p{margin:8px 0 16px}small,.muted{color:#647e90;font-size:13px}.intro{max-width:850px}.badge{display:inline-block;background:#dff2fb;color:#07658c;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;margin-bottom:10px}
+    .toolbar,.card{background:white;border:1px solid #d8e8f1;border-radius:18px;padding:22px;margin-top:20px}.toolbar{display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap}.toolbar label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap}button,select{border:1px solid #bcd9e8;border-radius:10px;padding:10px 14px;color:#07577e;background:#edf8fd;font-weight:600;font-size:13px}.primary{background:#087fab;color:white;border-color:#087fab}.secondary{background:#062c51;color:white;border-color:#062c51}.toolbar small{display:block;margin-top:5px}.step{font-size:12px;color:#526e82;margin-top:8px}.status{margin-top:16px;border-left:4px solid #0a91bd;padding:14px 18px;background:#dff2fb;border-radius:0 12px 12px 0;min-height:60px;font-size:14px}
+    .grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px}.grid .card{min-width:0}.wide{grid-column:1/-1}.card-top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.source{font-size:11px;color:#53768d;overflow-wrap:anywhere}.stats{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.stats span{background:#edf6fb;border-radius:8px;padding:6px 10px;font-size:12px}.stats b{color:#056d99}.cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:9px}.cell{min-height:110px;border:1px solid #d9e6ef;border-radius:12px;padding:9px 5px;text-align:center;background:#f6fafc;min-width:0}.cell.occupied{background:#e4f5fc;border-color:#83cce9}.index{font-size:11px;color:#688399}.ticket{font-size:15px;font-weight:800;display:block;color:#075b84}.level{font-size:11px;color:#506f83}.markers{display:flex;justify-content:center;flex-wrap:wrap;gap:3px;margin-top:6px;min-height:20px}.markers span{font-size:10px;background:#075c8b;color:white;border-radius:5px;padding:1px 4px}.markers .rear{background:#ffcf58;color:#654705}.formula{margin:12px 0;font-size:13px;color:#48677c;overflow-wrap:anywhere}.order{font-size:13px;overflow-wrap:anywhere;padding:10px 12px;background:#f4f8fb;border-radius:8px}.heap{display:flex;flex-direction:column;gap:12px;margin:16px 0}.heap-level{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.heap-node{min-width:85px;border:1px solid #f3bcc8;border-radius:12px;background:#fff0f3;padding:8px;text-align:center}.heap-node.root{border:2px solid #c64c68;background:#ffe5eb}.heap-node .ticket{color:#a03251}.empty{color:#7591a2;font-size:13px;padding:16px;text-align:center;border:1px dashed #c8dce8;border-radius:10px}.history{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0}.history-item{border:1px solid #bdded9;background:#e9f8f4;border-radius:12px;padding:9px 15px;text-align:center}.history-item .ticket{color:#08765f}.end{font-size:11px;font-weight:700;color:#08765f}.last{font-size:14px}.last b{color:#075c8b}.code{margin-top:16px;padding:12px 14px;background:#f3f7fa;border-radius:10px;font-size:12px;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere}.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:#617f92;margin-top:12px}.legend span{padding:3px 7px;border-radius:5px;background:#edf6fb}
+    @media(max-width:850px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.card,.toolbar{padding:17px}.toolbar{align-items:start}.controls{width:100%}h2{font-size:17px}}
+  </style>
+</head>
+<body>
+<header><div><strong>CareQueue UTC2 · Minh họa Queue</strong><p>Chế độ thuyết trình cấu trúc dữ liệu</p></div><a id="return-link" href="/">Về trang điều phối</a></header>
+<main>
+  <div class="intro"><span class="badge">Dữ liệu mẫu · Chạy riêng trong trình duyệt</span><h1>Nhìn thấy cách hàng đợi hoạt động</h1><p class="muted">Mô phỏng JavaScript theo thuật toán của các lớp C++ trong dự án. Dùng một phòng khám mẫu để tập trung vào thứ tự lấy phần tử.</p></div>
+  <section class="toolbar" aria-label="Điều khiển minh họa">
+    <div><div class="controls"><button id="next-step" type="button" class="primary">Chạy kịch bản mẫu</button><button id="reset" type="button">Đặt lại</button></div><div id="step-counter" class="step">Kịch bản 20 bước: FIFO → quay vòng → mở rộng → cấp cứu → lịch sử.</div></div>
+    <div><label for="priority">Tự thêm bệnh nhân mẫu</label><div class="controls"><select id="priority"><option value="5">Mức 5 - Thông thường</option><option value="4">Mức 4 - Ít khẩn</option><option value="3">Mức 3 - Khẩn</option><option value="2">Mức 2 - Cấp cứu</option><option value="1">Mức 1 - Nguy kịch</option></select><button id="add" type="button">Tiếp nhận mẫu</button><button id="call" type="button" class="secondary">Gọi tiếp theo</button></div><small>Thao tác thủ công sẽ kết thúc chế độ chạy kịch bản.</small></div>
+  </section>
+  <div id="operation" class="status" role="status" aria-live="polite">Bấm “Chạy kịch bản mẫu” hoặc tự tiếp nhận bệnh nhân để bắt đầu.</div>
+  <div class="grid">
+    <section class="card" aria-labelledby="regular-title">
+      <div class="card-top"><h2 id="regular-title">01 · Queue mảng vòng</h2><span class="badge">FIFO · Mức 3–5</span></div>
+      <p class="muted">Thêm ở cuối, lấy ở đầu. Mức 3–5 giữ thứ tự đến trong mô hình của dự án.</p>
+      <div class="stats"><span>front = <b id="regular-front">0</b></span><span>rear = <b id="regular-rear">0</b></span><span>count = <b id="regular-count">0</b></span><span>capacity = <b id="regular-capacity">4</b></span></div>
+      <div id="regular-cells" class="cells" aria-label="Các ô của mảng vòng"></div>
+      <div class="legend"><span>front: vị trí lấy tiếp theo</span><span>rear: vị trí thêm tiếp theo</span></div>
+      <p id="formula" class="formula"></p><div id="regular-order" class="order"></div>
+      <pre class="code">rear = (front_ + count_) % data_.size();
+data_[rear] = value; ++count_;
+// Khi lấy: front_ = (front_ + 1) % data_.size(); --count_;</pre>
+      <span class="source">Thuật toán: include/circular_queue.hpp · Mảng mẫu ban đầu có 4 ô; bản C++ mặc định có 8 ô.</span>
+    </section>
+    <section class="card" aria-labelledby="priority-title">
+      <div class="card-top"><h2 id="priority-title">02 · Priority Queue</h2><span class="badge">Cấp cứu · Mức 1–2</span></div>
+      <p class="muted">Heap theo độ ưu tiên: mức 1 trước mức 2; cùng mức thì người đến trước được gọi trước. Nút ở gốc được lấy đầu tiên.</p>
+      <div id="heap" class="heap" aria-label="Các tầng của heap ưu tiên"></div>
+      <div id="next-patient" class="order"></div>
+      <pre class="code">bool operator&lt;(const WaitingEntry&amp; other) const {
+  if (triageLevel != other.triageLevel)
+    return triageLevel &gt; other.triageLevel;
+  return arrivalOrder &gt; other.arrivalOrder;
+}</pre>
+      <p class="muted">Trong max-heap này, operator&lt; đảo chiều so sánh số mức: mức 1 có độ ưu tiên cao nhất.</p>
+      <span class="source">Thuật toán: include/priority_queue.hpp · So sánh: include/hospital_system.hpp</span>
+    </section>
+    <section class="card wide" aria-labelledby="history-title">
+      <div class="card-top"><h2 id="history-title">03 · Deque lịch sử gọi</h2><div class="controls"><button id="remove-newest" type="button">Xóa mục mới nhất</button><button id="remove-oldest" type="button">Xóa mục cũ nhất</button></div></div>
+      <p class="muted">Lượt vừa gọi được thêm vào đầu bằng push_front. Bản mẫu giữ 5 lượt; khi vượt giới hạn sẽ bỏ lượt cũ nhất bằng pop_back. Ứng dụng chính giữ 30 lượt.</p>
+      <div id="history" class="history" aria-label="Lịch sử từ mới nhất đến cũ nhất"></div>
+      <div class="last">Vừa lấy khỏi hàng đợi: <b id="last-ticket">—</b></div>
+      <pre class="code">callHistory_.push_front(record);
+while (callHistory_.size() &gt; historyLimit_) callHistory_.pop_back();</pre>
+      <span class="source">Thuật toán: include/deque.hpp · Xóa mục lịch sử trong bản mẫu chỉ minh họa thao tác Deque.</span>
+    </section>
+  </div>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+if(window.self!==window.top)$('return-link').hidden=true;
+const levels={1:'Nguy kịch',2:'Cấp cứu',3:'Khẩn',4:'Ít khẩn',5:'Thông thường'};
+const scenario=[5,5,5,'call','call',5,5,5,5,2,1,1,'call','call','call','call','call','call','call','call'];
+let data,front,count,heap,history,nextNumber,last,step,guided;
+function reset(){data=Array(4).fill(null);front=0;count=0;heap=[];history=[];nextNumber=1;last=null;step=0;guided=false;}
+function higher(a,b){return a.level<b.level||(a.level===b.level&&a.order<b.order);}
+function pushEmergency(patient){
+  heap.push(patient);let i=heap.length-1;
+  while(i>0){const parent=Math.floor((i-1)/2);if(!higher(heap[i],heap[parent]))break;[heap[i],heap[parent]]=[heap[parent],heap[i]];i=parent;}
+}
+function popEmergency(){
+  const result=heap[0],end=heap.pop();
+  if(heap.length){heap[0]=end;let i=0;for(;;){let best=i;const left=i*2+1,right=left+1;if(left<heap.length&&higher(heap[left],heap[best]))best=left;if(right<heap.length&&higher(heap[right],heap[best]))best=right;if(best===i)break;[heap[i],heap[best]]=[heap[best],heap[i]];i=best;}}
+  return result;
+}
+function admit(level){
+  if(!levels[level])return;
+  const patient={ticket:'MP'+String(nextNumber).padStart(3,'0'),level,order:nextNumber++};
+  let explanation;
+  if(level<=2){pushEmergency(patient);explanation='push vào Priority Queue; siftUp đưa phần tử có ưu tiên cao lên trên.';}
+  else{
+    let growth='';
+    if(count===data.length){const capacity=data.length;data=Array.from({length:capacity*2},(_,i)=>i<count?data[(front+i)%capacity]:null);front=0;growth='Mảng đầy: mở rộng '+capacity+' → '+data.length+' ô, giữ FIFO và đặt front = 0. ';}
+    const rear=(front+count)%data.length;data[rear]=patient;count++;explanation=growth+'push vào ô ['+rear+']; count tăng lên '+count+'.';
+  }
+  $('operation').textContent='Tiếp nhận '+patient.ticket+' · Mức '+level+' - '+levels[level]+'. '+explanation;
+}
+function callNext(){
+  let patient,explanation;
+  if(heap.length){patient=popEmergency();explanation='pop từ gốc Priority Queue; siftDown khôi phục tính chất heap.';}
+  else if(count){const previous=front;patient=data[front];data[front]=null;front=(front+1)%data.length;count--;explanation='pop ô ['+previous+']; front chuyển sang '+front+', count còn '+count+'.';}
+  else{$('operation').textContent='Hàng đợi đang rỗng.';return;}
+  last=patient;history.unshift(patient);const removed=history.length>5?history.pop():null;
+  $('operation').textContent='Gọi '+patient.ticket+'. '+explanation+' Deque: push_front lượt vừa gọi.'+(removed?' Đủ 5 lượt: pop_back bỏ '+removed.ticket+'.':'');
+}
+function patientHtml(p){return '<span class="ticket">'+p.ticket+'</span><span class="level">Mức '+p.level+' · '+levels[p.level]+'</span>';}
+function render(){
+  const rear=(front+count)%data.length;
+  $('regular-front').textContent=front;$('regular-rear').textContent=rear;$('regular-count').textContent=count;$('regular-capacity').textContent=data.length;
+  $('regular-cells').innerHTML=data.map((p,i)=>'<div class="cell'+(p?' occupied':'')+'"><div class="index">Ô ['+i+']</div>'+(p?patientHtml(p):'<span class="ticket">∅</span><span class="level">Ô trống</span>')+'<div class="markers">'+(i===front?'<span>front</span>':'')+(i===rear?'<span class="rear">rear</span>':'')+'</div></div>').join('');
+  $('formula').textContent='rear = ('+front+' + '+count+') % '+data.length+' = '+rear+'.'+(count===data.length?' Mảng đầy: lần thêm tiếp theo sẽ mở rộng trước khi ghi.':count===0?' Mảng rỗng: front = rear, count = 0.':'');
+  $('regular-order').textContent='Thứ tự FIFO: '+(Array.from({length:count},(_,i)=>data[(front+i)%data.length].ticket).join(' → ')||'Chưa có bệnh nhân');
+  let tree='';for(let start=0,width=1;start<heap.length;start+=width,width*=2){tree+='<div class="heap-level">'+heap.slice(start,start+width).map((p,i)=>'<div class="heap-node'+(start===0?' root':'')+'"><div class="index">Heap ['+(start+i)+']</div>'+patientHtml(p)+'</div>').join('')+'</div>';}
+  $('heap').innerHTML=tree||'<div class="empty">Chưa có ca cấp cứu trong hàng đợi mẫu.</div>';
+  const next=heap[0]||(count?data[front]:null);$('next-patient').textContent=next?'Sẽ gọi: '+next.ticket+' · '+(heap.length?'Ưu tiên cấp cứu':'FIFO'):'Sẽ gọi: chưa có bệnh nhân';
+  $('history').innerHTML=history.map((p,i)=>{
+    const end=history.length===1?'front = back':i===0?'front · mới nhất':i===history.length-1?'back · cũ nhất':'Lịch sử';
+    return '<div class="history-item" data-ticket="'+p.ticket+'"><div class="end">'+end+'</div>'+patientHtml(p)+'</div>';
+  }).join('')||'<div class="empty">Chưa có lượt gọi.</div>';
+  $('last-ticket').textContent=last?last.ticket:'—';$('call').disabled=count===0&&heap.length===0;
+  $('remove-newest').disabled=history.length===0;$('remove-oldest').disabled=history.length===0;
+  $('next-step').disabled=guided&&step===scenario.length;$('next-step').textContent=guided?(step===scenario.length?'Đã hoàn thành kịch bản':'Bước tiếp theo'):'Chạy kịch bản mẫu';
+  $('step-counter').textContent=guided?'Bước '+step+' / '+scenario.length+' · Bấm Đặt lại để bắt đầu lại.':'Kịch bản 20 bước: FIFO → quay vòng → mở rộng → cấp cứu → lịch sử.';
+}
+function manual(operation){guided=false;step=0;operation();render();}
+$('add').addEventListener('click',()=>manual(()=>admit(Number($('priority').value))));
+$('call').addEventListener('click',()=>manual(callNext));
+$('reset').addEventListener('click',()=>{reset();$('operation').textContent='Đã đặt lại toàn bộ dữ liệu mẫu.';render();});
+$('next-step').addEventListener('click',()=>{if(!guided){reset();guided=true;}if(step>=scenario.length)return;const action=scenario[step++];if(action==='call')callNext();else admit(action);render();});
+$('remove-newest').addEventListener('click',()=>manual(()=>{const p=history.shift();$('operation').textContent='Deque: pop_front xóa mục mới nhất '+p.ticket+'.';}));
+$('remove-oldest').addEventListener('click',()=>manual(()=>{const p=history.pop();$('operation').textContent='Deque: pop_back xóa mục cũ nhất '+p.ticket+'.';}));
+reset();render();
+</script>
+</body>
+</html>
