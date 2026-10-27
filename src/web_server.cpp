@@ -219,6 +219,14 @@ void handleRequest(Socket client, HospitalSystem& system) {
             sendResponse(client, 200, "text/html", html.str());
             return;
         }
+        if (request.method == "GET" && request.path == "/app.js") {
+            std::ifstream file("web/app.js", std::ios::binary);
+            if (!file) { sendResponse(client, 404, "text/plain", "Khong tim thay app.js."); return; }
+            std::ostringstream script;
+            script << file.rdbuf();
+            sendResponse(client, 200, "application/javascript; charset=utf-8", script.str());
+            return;
+        }
         if (request.method == "GET" && request.path == "/api/state") {
             sendResponse(client, 200, "application/json", stateJson(system));
             return;
@@ -239,10 +247,22 @@ void handleRequest(Socket client, HospitalSystem& system) {
             sendResponse(client, 200, "application/json", "{\"ok\":true,\"message\":\"Moi " +
                          jsonEscape(patient->name) + " (" + jsonEscape(patient->ticket) + ") den khoa " +
                          jsonEscape(patient->department) + "\",\"ticket\":\"" + jsonEscape(patient->ticket) + "\"}");
+        } else if (request.path == "/api/call-specific") {
+            const auto patient = system.callSpecificPatient(field(form, "ticket"));
+            if (!patient) { sendResponse(client, 200, "application/json", "{\"ok\":false,\"message\":\"Khong tim thay benh nhan dang cho.\"}"); return; }
+            sendResponse(client, 200, "application/json", "{\"ok\":true,\"message\":\"Da goi benh nhan.\",\"ticket\":\"" + jsonEscape(patient->ticket) + "\"}");
         } else if (request.path == "/api/complete") {
             const bool ok = system.completeConsultation(field(form, "ticket"));
             sendResponse(client, 200, "application/json", ok ? "{\"ok\":true,\"message\":\"Da hoan tat luot kham.\"}" :
                          "{\"ok\":false,\"message\":\"Khong tim thay benh nhan dang kham.\"}");
+        } else if (request.path == "/api/absent" || request.path == "/api/cancel" || request.path == "/api/transfer-department") {
+            const std::string ticket = field(form, "ticket");
+            bool ok = false;
+            if (request.path == "/api/absent") ok = system.markAbsent(ticket);
+            else if (request.path == "/api/cancel") ok = system.cancelPatient(ticket);
+            else ok = system.transferDepartment(ticket, field(form, "department"));
+            sendResponse(client, 200, "application/json", ok ? "{\"ok\":true,\"message\":\"Da cap nhat ho so.\"}" :
+                         "{\"ok\":false,\"message\":\"Khong the cap nhat. Kiem tra trang thai va khoa.\"}");
         } else if (request.path == "/api/transfer") {
             const int level = std::stoi(field(form, "triage"));
             const bool ok = system.transferToEmergency(field(form, "ticket"), level);

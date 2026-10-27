@@ -26,4 +26,15 @@ int main() {
     assert(hospital.callNextPatient("Tim mach")->ticket == first.ticket);
     assert(hospital.callNextPatient("Tim mach")->ticket == second.ticket);
     assert(!hospital.callNextPatient("Tim mach"));
+
+    auto transferred = hospital.registerPatient("D", 40, "", 5, "Tim mach");
+    auto cancelled = hospital.registerPatient("E", 20, "", 5, "Tim mach");
+    assert(hospital.cancelPatient(cancelled.ticket));
+    assert(hospital.callSpecificPatient(transferred.ticket));
+    assert(hospital.transferDepartment(transferred.ticket, "Nhi"));
+    assert(!hospital.callNextPatient("Tim mach"));
+    auto called = hospital.callNextPatient("Nhi");
+    assert(called && called->ticket == transferred.ticket);
+    assert(hospital.markAbsent(transferred.ticket));
+    assert(!hospital.markAbsent(transferred.ticket));
 }

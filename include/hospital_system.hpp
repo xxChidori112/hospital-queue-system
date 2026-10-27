@@ -14,7 +14,7 @@
 
 struct sqlite3;
 
-enum class PatientStatus { Waiting, InConsultation, Completed };
+enum class PatientStatus { Waiting, InConsultation, Completed, Absent, Cancelled };
 
 struct Patient {
     std::string ticket;
@@ -63,7 +63,11 @@ public:
                             int triageLevel, std::string department = "");
     bool transferToEmergency(const std::string& ticket, int triageLevel = 1);
     std::optional<Patient> callNextPatient(const std::string& department = "");
+    std::optional<Patient> callSpecificPatient(const std::string& ticket);
     bool completeConsultation(const std::string& ticket);
+    bool markAbsent(const std::string& ticket);
+    bool cancelPatient(const std::string& ticket);
+    bool transferDepartment(const std::string& ticket, const std::string& department);
 
     [[nodiscard]] std::vector<Patient> waitingPatients() const;
     [[nodiscard]] std::vector<Patient> allPatients() const;
@@ -79,6 +83,7 @@ public:
 private:
     bool isCurrentWaitingEntry(const WaitingEntry& entry) const;
     void enqueuePatient(Patient& patient);
+    std::optional<Patient> startConsultation(const std::string& ticket);
     std::optional<WaitingEntry> takeNextRegularEntry(const std::string& department);
     void initializeDatabase(const std::string& databasePath);
     void loadDatabase();

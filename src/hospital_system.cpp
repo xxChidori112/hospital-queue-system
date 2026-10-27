@@ -234,7 +234,17 @@ std::optional<Patient> HospitalSystem::callNextPatient(const std::string& depart
     if (!entry) entry = takeNextRegularEntry(department);
     if (!entry) return std::nullopt;
 
-    auto& patient = patients_.at(entry->ticket);
+    return startConsultation(entry->ticket);
+}
+
+std::optional<Patient> HospitalSystem::callSpecificPatient(const std::string& ticket) {
+    const auto it = patients_.find(ticket);
+    if (it == patients_.end() || it->second.status != PatientStatus::Waiting) return std::nullopt;
+    return startConsultation(ticket);
+}
+
+std::optional<Patient> HospitalSystem::startConsultation(const std::string& ticket) {
+    auto& patient = patients_.at(ticket);
     const Patient previous = patient;
     patient.status = PatientStatus::InConsultation;
     CallRecord record{patient.ticket, patient.name, patient.department, currentTime(), patient.emergency};
@@ -258,6 +268,38 @@ bool HospitalSystem::completeConsultation(const std::string& ticket) {
     it->second.status = PatientStatus::Completed;
     try { savePatient(it->second); }
     catch (...) { it->second.status = PatientStatus::InConsultation; return false; }
+    return true;
+}
+
+bool HospitalSystem::markAbsent(const std::string& ticket) {
+    auto it = patients_.find(ticket);
+    if (it == patients_.end() || it->second.status != PatientStatus::InConsultation) return false;
+    it->second.status = PatientStatus::Absent;
+    try { savePatient(it->second); }
+    catch (...) { it->second.status = PatientStatus::InConsultation; return false; }
+    return true;
+}
+
+bool HospitalSystem::cancelPatient(const std::string& ticket) {
+    auto it = patients_.find(ticket);
+    if (it == patients_.end() || it->second.status != PatientStatus::Waiting) return false;
+    it->second.status = PatientStatus::Cancelled;
+    try { savePatient(it->second); }
+    catch (...) { it->second.status = PatientStatus::Waiting; return false; }
+    return true;
+}
+
+bool HospitalSystem::transferDepartment(const std::string& ticket, const std::string& department) {
+    auto it = patients_.find(ticket);
+    if (it == patients_.end() || it->second.status != PatientStatus::InConsultation ||
+        regularQueues_.find(department) == regularQueues_.end()) return false;
+    Patient previous = it->second;
+    it->second.department = department;
+    it->second.status = PatientStatus::Waiting;
+    it->second.arrivalOrder = nextArrivalOrder_++;
+    enqueuePatient(it->second);
+    try { savePatient(it->second); }
+    catch (...) { it->second = std::move(previous); return false; }
     return true;
 }
 
@@ -331,6 +373,8 @@ std::string HospitalSystem::statusText(PatientStatus status) {
         case PatientStatus::Waiting: return "Dang cho";
         case PatientStatus::InConsultation: return "Dang kham";
         case PatientStatus::Completed: return "Da kham xong";
+        case PatientStatus::Absent: return "Vang mat";
+        case PatientStatus::Cancelled: return "Da huy";
     }
     return "Khong ro";
 }
