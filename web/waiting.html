@@ -80,17 +80,18 @@ $('fullscreen').addEventListener('click',async()=>{
   catch (_) {$('connection').textContent='Trình duyệt không hỗ trợ toàn màn hình';}
 });
 document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Thoát toàn màn hình':'Toàn màn hình';});
+// shortcut: Danh sách GIPHY cố định; dùng API khi cần tự tìm GIF mới.
 const memes = [
   {url:'https://media.giphy.com/media/3o72F8t9TDi2xVnxOE/giphy.gif',source:'https://giphy.com/gifs/shocked-monkey-stunned-3o72F8t9TDi2xVnxOE',caption:'Ủa, có chuyện gì vậy ta?',alt:'Rối khỉ tròn mắt ngạc nhiên'},
   {url:'https://media.giphy.com/media/mXwyHomA2kQbQHuh2R/giphy.gif',source:'https://giphy.com/gifs/jumanjiwelcometothejungle-2017-jumanji-mXwyHomA2kQbQHuh2R',caption:'Một chiếc nhướng mày đầy suy tư.',alt:'The Rock nhướng mày với vẻ nghi ngờ'},
-  {url:'https://media1.tenor.com/m/M-gxaGNB8zUAAAAd/shrek-smile.gif',source:'https://tenor.com/view/shrek-smile-gif-3740293814942823221',provider:'Tenor',caption:'Nụ cười rất chi là tự tin.',alt:'Shrek nhìn lên và nở nụ cười'},
+  {url:'https://media.giphy.com/media/S2D753TsCrbPsMRTwK/giphy.gif',source:'https://giphy.com/gifs/thumbs-up-cat-car-awesome-S2D753TsCrbPsMRTwK',caption:'Một lượt thích cho ngày vui vẻ!',alt:'Mèo hoạt hình giơ ngón tay cái'},
   {url:'https://media.giphy.com/media/Yt09iFvD9u5AQ/giphy.gif',source:'https://giphy.com/gifs/cat-kitten-Yt09iFvD9u5AQ',caption:'Giữ tinh thần vui vẻ trong lúc chờ nhé!',alt:'Mèo con phấn khích chuyển động vui nhộn'}
 ];
-let memeIndex=0, memePaused=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let memeIndex=Math.floor(Math.random()*memes.length), memePaused=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function showMeme() {
   const meme=memes[memeIndex], image=$('meme-image');
   image.hidden=true;image.removeAttribute('src');
-  $('meme-caption').textContent=meme.caption;$('meme-source').href=meme.source;$('meme-source').textContent='Nguồn: '+(meme.provider||'GIPHY');
+  $('meme-caption').textContent=meme.caption;$('meme-source').href=meme.source;$('meme-source').textContent='Nguồn: GIPHY';
   $('meme-status').hidden=false;$('meme-status').textContent=memePaused?'GIF đã tạm dừng.':'Đang tải GIF...';
   $('meme-toggle').textContent=memePaused?'Phát GIF':'Tạm dừng';
   if(!memePaused){image.alt=meme.alt;image.src=meme.url;}
@@ -98,8 +99,12 @@ function showMeme() {
 $('meme-image').addEventListener('load',()=>{if(!memePaused){$('meme-image').hidden=false;$('meme-status').hidden=true;}});
 $('meme-image').addEventListener('error',()=>{if(!memePaused){$('meme-image').hidden=true;$('meme-status').hidden=false;$('meme-status').textContent='Không tải được GIF. Vui lòng thử ảnh tiếp theo.';}});
 $('meme-toggle').addEventListener('click',()=>{memePaused=!memePaused;showMeme();});
-$('meme-next').addEventListener('click',()=>{memeIndex=(memeIndex+1)%memes.length;showMeme();});
-showMeme();setInterval(()=>{if(!memePaused){memeIndex=(memeIndex+1)%memes.length;showMeme();}},12000);
+function nextMeme() {
+  memeIndex=(memeIndex+1+Math.floor(Math.random()*(memes.length-1)))%memes.length;
+  showMeme();
+}
+$('meme-next').addEventListener('click',nextMeme);
+showMeme();setInterval(()=>{if(!memePaused)nextMeme();},6000);
 clock();render({waiting:[],active:[]});refresh();setInterval(clock,1000);setInterval(refresh,5000);
 </script>
 </body>
