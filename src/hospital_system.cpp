@@ -37,6 +37,23 @@ void HospitalSystem::initializeDatabase(const std::string& databasePath) {
                "ticket TEXT PRIMARY KEY, name TEXT NOT NULL, age INTEGER NOT NULL, symptom TEXT NOT NULL, "
                "department TEXT NOT NULL, triage_level INTEGER NOT NULL, arrival_order INTEGER NOT NULL, "
                "queue_version INTEGER NOT NULL, arrival_time TEXT NOT NULL, status INTEGER NOT NULL, emergency INTEGER NOT NULL)");
+    // Thêm cột cho hồ sơ cũ mà không thay đổi dữ liệu đã lưu.
+    for (const auto& column : {std::pair<const char*, const char*>{"birth_year", "ALTER TABLE patients ADD COLUMN birth_year INTEGER NOT NULL DEFAULT 0"},
+                               {"gender", "ALTER TABLE patients ADD COLUMN gender TEXT NOT NULL DEFAULT ''"},
+                               {"category", "ALTER TABLE patients ADD COLUMN category TEXT NOT NULL DEFAULT ''"}}) {
+        sqlite3_stmt* info = nullptr;
+        if (sqlite3_prepare_v2(database_, "PRAGMA table_info(patients)", -1, &info, nullptr) != SQLITE_OK)
+            throw std::runtime_error("SQLite: khong kiem tra duoc cau truc du lieu.");
+        bool found = false;
+        int result = SQLITE_OK;
+        while ((result = sqlite3_step(info)) == SQLITE_ROW) {
+            const auto* name = sqlite3_column_text(info, 1);
+            if (name && std::string(reinterpret_cast<const char*>(name)) == column.first) found = true;
+        }
+        sqlite3_finalize(info);
+        if (result != SQLITE_DONE) throw std::runtime_error("SQLite: khong doc duoc cau truc du lieu.");
+        if (!found) executeSql(column.second);
+    }
     executeSql("CREATE TABLE IF NOT EXISTS call_history ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, ticket TEXT NOT NULL, patient_name TEXT NOT NULL, "
                "department TEXT NOT NULL, called_at TEXT NOT NULL, emergency INTEGER NOT NULL)");
@@ -54,7 +71,7 @@ void HospitalSystem::executeSql(const char* sql) {
 
 void HospitalSystem::loadDatabase() {
     sqlite3_stmt* statement = nullptr;
-    const char* patientQuery = "SELECT ticket,name,age,symptom,department,triage_level,arrival_order,arrival_time,status,emergency "
+    const char* patientQuery = "SELECT ticket,name,age,symptom,department,triage_level,arrival_order,arrival_time,status,emergency,birth_year,gender,category "
                                "FROM patients ORDER BY arrival_order";
     if (sqlite3_prepare_v2(database_, patientQuery, -1, &statement, nullptr) != SQLITE_OK)
         throw std::runtime_error("SQLite: khong doc duoc danh sach benh nhan.");
@@ -74,6 +91,9 @@ void HospitalSystem::loadDatabase() {
         patient.arrivalTime = text(7);
         patient.status = static_cast<PatientStatus>(sqlite3_column_int(statement, 8));
         patient.emergency = sqlite3_column_int(statement, 9) != 0;
+        patient.birthYear = sqlite3_column_int(statement, 10);
+        patient.gender = text(11);
+        patient.category = text(12);
         patient.queueVersion = 0;
         nextArrivalOrder_ = std::max(nextArrivalOrder_, patient.arrivalOrder + 1);
         if (patient.ticket.size() > 2 && patient.ticket.rfind("BN", 0) == 0) {
@@ -99,11 +119,12 @@ void HospitalSystem::loadDatabase() {
 }
 
 void HospitalSystem::savePatient(const Patient& patient) {
-    const char* sql = "INSERT INTO patients(ticket,name,age,symptom,department,triage_level,arrival_order,queue_version,arrival_time,status,emergency) "
-                      "VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(ticket) DO UPDATE SET "
+    const char* sql = "INSERT INTO patients(ticket,name,age,symptom,department,triage_level,arrival_order,queue_version,arrival_time,status,emergency,birth_year,gender,category) "
+                      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(ticket) DO UPDATE SET "
                       "name=excluded.name,age=excluded.age,symptom=excluded.symptom,department=excluded.department,"
                       "triage_level=excluded.triage_level,arrival_order=excluded.arrival_order,queue_version=excluded.queue_version,"
-                      "arrival_time=excluded.arrival_time,status=excluded.status,emergency=excluded.emergency";
+                      "arrival_time=excluded.arrival_time,status=excluded.status,emergency=excluded.emergency,"
+                      "birth_year=excluded.birth_year,gender=excluded.gender,category=excluded.category";
     sqlite3_stmt* statement = nullptr;
     if (sqlite3_prepare_v2(database_, sql, -1, &statement, nullptr) != SQLITE_OK)
         throw std::runtime_error("SQLite: khong chuan bi duoc lenh luu benh nhan.");
@@ -118,6 +139,9 @@ void HospitalSystem::savePatient(const Patient& patient) {
     sqlite3_bind_text(statement, 9, patient.arrivalTime.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(statement, 10, static_cast<int>(patient.status));
     sqlite3_bind_int(statement, 11, patient.emergency ? 1 : 0);
+    sqlite3_bind_int(statement, 12, patient.birthYear);
+    sqlite3_bind_text(statement, 13, patient.gender.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(statement, 14, patient.category.c_str(), -1, SQLITE_TRANSIENT);
     const int result = sqlite3_step(statement);
     sqlite3_finalize(statement);
     if (result != SQLITE_DONE) throw std::runtime_error("SQLite: khong luu duoc benh nhan.");
@@ -139,9 +163,18 @@ void HospitalSystem::saveCall(const CallRecord& record) {
 }
 
 Patient HospitalSystem::registerPatient(std::string name, int age, std::string symptom,
-                                        int triageLevel, std::string department) {
+                                        int triageLevel, std::string department, int birthYear,
+                                        std::string gender, std::string category) {
     if (name.empty()) throw std::invalid_argument("Ten benh nhan khong duoc de trong.");
     if (age < 0 || age > 120) throw std::invalid_argument("Tuoi phai nam trong khoang 0-120.");
+    const std::string timestamp = currentTime();
+    const int currentYear = std::stoi(timestamp.substr(timestamp.size() - 4));
+    if (birthYear != 0 && (birthYear < currentYear - 120 || birthYear > currentYear || age != currentYear - birthYear))
+        throw std::invalid_argument("Nam sinh khong hop le.");
+    if (!gender.empty() && gender != "male" && gender != "female" && gender != "other" && gender != "unspecified")
+        throw std::invalid_argument("Gioi tinh khong hop le.");
+    if (!category.empty() && category != "student_bhyt" && category != "employee_bhyt" && category != "other_bhyt" && category != "service" && category != "other")
+        throw std::invalid_argument("Doi tuong khong hop le.");
     if (triageLevel < 1 || triageLevel > 5) throw std::invalid_argument("Muc do uu tien phai tu 1 den 5.");
     if (department.empty()) department = inferDepartment(symptom);
     if (std::find(departments_.begin(), departments_.end(), department) == departments_.end())
@@ -154,6 +187,9 @@ Patient HospitalSystem::registerPatient(std::string name, int age, std::string s
     patient.ticket = ticket.str();
     patient.name = std::move(name);
     patient.age = age;
+    patient.birthYear = birthYear;
+    patient.gender = std::move(gender);
+    patient.category = std::move(category);
     patient.symptom = std::move(symptom);
     patient.department = std::move(department);
     patient.triageLevel = triageLevel;

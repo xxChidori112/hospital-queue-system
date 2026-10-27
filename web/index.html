@@ -439,7 +439,7 @@
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
               <span class="text-xs font-extrabold uppercase tracking-widest text-sky-500 block">TIME TABLE • TIẾP NHẬN NHANH</span>
-              <h2 class="text-2xl font-extrabold text-slate-800 mt-0.5">Đăng Ký &amp; Cấp Phiếu Khám</h2>
+              <h2 class="text-2xl font-extrabold text-slate-800 mt-0.5">Đăng Ký &amp; Tiếp Nhận Bệnh Nhân</h2>
             </div>
             <span id="next-ticket-preview" class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 font-mono text-xs font-extrabold border border-sky-200">
               Mã phiếu được cấp tự động
@@ -447,59 +447,20 @@
           </div>
 
           <form id="intake-form" class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-              <div class="sm:col-span-8">
-                <label for="input-name" class="block text-xs font-bold text-slate-700 mb-1">Họ và tên bệnh nhân <span class="text-rose-500">*</span></label>
-                <input type="text" id="input-name" required placeholder="VD: Nguyễn Văn An" class="w-full px-4 py-2.5 rounded-2xl bg-white border border-sky-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
-              </div>
-              <div class="sm:col-span-4">
-                <label for="input-age" class="block text-xs font-bold text-slate-700 mb-1">Tuổi <span class="text-rose-500">*</span></label>
-                <input type="number" id="input-age" required min="0" max="120" placeholder="VD: 45" class="w-full px-4 py-2.5 rounded-2xl bg-white border border-sky-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
-              </div>
-            </div>
-
+            <div><label for="input-name" class="block text-xs font-bold text-slate-700 mb-1">HỌ VÀ TÊN BỆNH NHÂN <span class="text-rose-500">*</span></label>
+              <input type="text" id="input-name" required maxlength="100" placeholder="Nhập họ tên sinh viên / cán bộ..." class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900 focus:ring-2 focus:ring-sky-400/40" /></div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="input-priority" class="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên (Triage)</label>
-                <select id="input-priority" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-sky-200 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500">
-                  <option value="5">5 - Thông thường (Xanh lá)</option>
-                  <option value="4">4 - Bán khẩn (Xanh dương)</option>
-                  <option value="3">3 - Ưu tiên (Vàng)</option>
-                  <option value="2">2 - Khẩn cấp (Cam)</option>
-                  <option value="1">1 - Cấp cứu tối khẩn (Đỏ)</option>
-                </select>
-              </div>
-              <div>
-                <label for="input-dept" class="block text-xs font-bold text-slate-700 mb-1">Phân luồng chuyên khoa</label>
-                <select id="input-dept" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-sky-200 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500">
-                  <option value="Nội tổng quát">Khoa Nội tổng quát (P.101)</option>
-                  <option value="Tim mạch">Khoa Tim mạch (P.204)</option>
-                  <option value="Cấp cứu">Khoa Cấp cứu (P.CC01)</option>
-                  <option value="Nhi khoa">Khoa Nhi (P.105)</option>
-                  <option value="Ngoại chấn thương">Khoa Ngoại chấn thương (P.108)</option>
-                  <option value="Tai Mũi Họng">Khoa Tai Mũi Họng (P.302)</option>
-                </select>
-              </div>
+              <div><label for="input-birth-year" class="block text-xs font-bold text-slate-700 mb-1">NĂM SINH <span class="text-rose-500">*</span></label><input type="number" id="input-birth-year" required placeholder="Ví dụ: 2003" class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900" /><p class="text-xs text-slate-500 mt-1">Tuổi được ước tính theo năm sinh.</p></div>
+              <div><label for="input-gender" class="block text-xs font-bold text-slate-700 mb-1">GIỚI TÍNH <span class="text-rose-500">*</span></label><select id="input-gender" required class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900"><option value="">Chọn giới tính</option><option value="male">Nam</option><option value="female">Nữ</option><option value="other">Khác</option><option value="unspecified">Không cung cấp</option></select></div>
             </div>
-
-
-
-            <div>
-              <label for="input-symptoms" class="block text-xs font-bold text-slate-700 mb-1">Triệu chứng / Lý do khám</label>
-              <textarea id="input-symptoms" rows="2" placeholder="Nhập triệu chứng lâm sàng, huyết áp, nhịp tim..." class="w-full px-4 py-2 rounded-2xl bg-white border border-sky-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"></textarea>
-
-              <!-- Quick Symptom Chips -->
-              <div class="flex flex-wrap gap-1.5 mt-2">
-                <button type="button" data-symptom="Đau tức ngực, khó thở" data-prio="2" data-dept="Tim mạch" class="symptom-chip text-[11px] px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-semibold transition-colors">+ Đau ngực, khó thở</button>
-                <button type="button" data-symptom="Sốt cao 39.5°C, co giật" data-prio="1" data-dept="Cấp cứu" class="symptom-chip text-[11px] px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-semibold transition-colors">+ Sốt cao co giật</button>
-                <button type="button" data-symptom="Ho kéo dài, đau họng" data-prio="5" data-dept="Tai Mũi Họng" class="symptom-chip text-[11px] px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 font-semibold transition-colors">+ Ho, đau họng</button>
-                <button type="button" data-symptom="Khám định kỳ, cấp thuốc huyết áp" data-prio="5" data-dept="Nội tổng quát" class="symptom-chip text-[11px] px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 font-semibold transition-colors">+ Tái khám huyết áp</button>
-              </div>
+            <div><label for="input-dept" class="block text-xs font-bold text-slate-700 mb-1">KHOA / PHÒNG KHÁM <span class="text-rose-500">*</span></label><select id="input-dept" required class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900"><option value="">Chọn khoa / phòng khám</option></select></div>
+            <div class="flex justify-between gap-3 rounded-2xl bg-sky-50 border border-sky-100 px-4 py-3 text-sm"><span class="text-slate-500">Bác sĩ phụ trách:</span><strong id="input-doctor" class="text-sky-800 text-right">Chọn phòng khám</strong></div>
+            <div><label for="input-symptoms" class="block text-xs font-bold text-slate-700 mb-1">LÝ DO KHÁM / TRIỆU CHỨNG <span class="text-rose-500">*</span></label><textarea id="input-symptoms" required maxlength="500" rows="2" placeholder="Sốt, đau họng, kiểm tra mắt..." class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900"></textarea></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label for="input-priority" class="block text-xs font-bold text-slate-700 mb-1">PHÂN LOẠI</label><select id="input-priority" class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900"><option value="5">Mức 5 - Thông thường</option><option value="4">Mức 4 - Ít khẩn</option><option value="3">Mức 3 - Khẩn</option><option value="2">Mức 2 - Cấp cứu</option><option value="1">Mức 1 - Nguy kịch</option></select></div>
+              <div><label for="input-category" class="block text-xs font-bold text-slate-700 mb-1">ĐỐI TƯỢNG <span class="text-rose-500">*</span></label><select id="input-category" required class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900"><option value="">Chọn đối tượng</option><option value="student_bhyt">BHYT sinh viên</option><option value="employee_bhyt">BHYT cán bộ / nhân viên</option><option value="other_bhyt">BHYT khác</option><option value="service">Khám dịch vụ</option><option value="other">Khác</option></select></div>
             </div>
-
-            <button type="submit" class="px-7 py-3 rounded-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-bold text-sm shadow-lg shadow-sky-500/25 transition-all">
-              Tạo hồ sơ &amp; Cấp số ngay
-            </button>
+            <button type="submit" class="w-full px-7 py-3 rounded-2xl bg-[#07558a] hover:bg-[#064878] text-white font-bold text-sm shadow-md">CẤP PHIẾU KHÁM &amp; VÀO HÀNG ĐỢI</button>
           </form>
         </div>
 

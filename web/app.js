@@ -13,6 +13,8 @@ const labels = Object.fromEntries(rooms.map(room => [room.department, 'P.'+room.
 labels['Tim mach'] = 'Tim mạch (khoa cũ)';
 labels['Noi tiet'] = 'Nội tiết (khoa cũ)';
 const statuses = {'Dang cho':'Đang chờ','Dang kham':'Đang khám','Da kham xong':'Đã hoàn tất','Vang mat':'Vắng mặt','Da huy':'Đã hủy'};
+const genders = {male:'Nam',female:'Nữ',other:'Khác',unspecified:'Không cung cấp'};
+const categories = {student_bhyt:'BHYT sinh viên',employee_bhyt:'BHYT cán bộ / nhân viên',other_bhyt:'BHYT khác',service:'Khám dịch vụ',other:'Khác'};
 let state = {patients:[], waiting:[], history:[], departments:[]};
 let activeTicket = '';
 let soundEnabled = true;
@@ -65,7 +67,8 @@ function render() {
   const waits = waiting.map(p => p.waitMinutes).filter(n => typeof n === 'number');
   byId('kpi-wait-avg').textContent = waits.length ? 'Chờ dự kiến trung bình: '+Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)+' phút' : 'Chưa có bệnh nhân chờ';
   fillDepartments('dispatch-dept','Tất cả khoa'); fillDepartments('filter-dept','Tất cả khoa');
-  fillDepartments('input-dept','Tự động phân luồng'); fillDepartments('transfer-dept','Chọn khoa');
+  fillDepartments('input-dept','Chọn khoa / phòng khám'); fillDepartments('transfer-dept','Chọn khoa');
+  byId('input-doctor').textContent = (rooms.find(room => room.department === byId('input-dept').value) || {}).doctor || (byId('input-dept').value ? 'Chưa có thông tin' : 'Chọn phòng khám');
   fillDepartments('header-department','Tất cả các khoa / phòng khám');
   byId('header-department').value = byId('filter-dept').value;
   byId('room-list').innerHTML = rooms.map(room => {
@@ -86,7 +89,8 @@ function render() {
     const ticket=escapeText(p.ticket);
     let actions = p.status === 'Dang cho' ? '<button data-action="call" data-ticket="'+ticket+'">Gọi</button> <button data-action="emergency" data-ticket="'+ticket+'">Cấp cứu</button> <button data-action="cancel" data-ticket="'+ticket+'">Hủy phiếu</button>' :
       p.status === 'Dang kham' ? '<button data-action="select" data-ticket="'+ticket+'">Chọn</button> <button data-action="complete" data-ticket="'+ticket+'">Hoàn tất</button>' : '';
-    return '<tr><td class="py-3 pl-6 font-bold text-sky-700">'+ticket+'</td><td class="p-3">'+escapeText(p.name)+'<div class="text-xs text-slate-500">'+escapeText(p.symptom)+'</div></td><td class="p-3">'+escapeText(labels[p.department]||p.department)+'</td><td class="p-3">Mức '+p.triageLevel+'</td><td class="p-3">'+escapeText(statuses[p.status]||p.status)+'</td><td class="p-3">'+(p.waitMinutes == null ? '—' : p.waitMinutes+' phút')+'</td><td class="p-3 text-right text-sky-700 font-semibold">'+actions+'</td></tr>';
+    const details = [p.birthYear ? 'Sinh năm '+p.birthYear : p.age+' tuổi', genders[p.gender], categories[p.category], p.symptom].filter(Boolean).join(' · ');
+    return '<tr><td class="py-3 pl-6 font-bold text-sky-700">'+ticket+'</td><td class="p-3">'+escapeText(p.name)+'<div class="text-xs text-slate-500">'+escapeText(details)+'</div></td><td class="p-3">'+escapeText(labels[p.department]||p.department)+'</td><td class="p-3">Mức '+p.triageLevel+'</td><td class="p-3">'+escapeText(statuses[p.status]||p.status)+'</td><td class="p-3">'+(p.waitMinutes == null ? '—' : p.waitMinutes+' phút')+'</td><td class="p-3 text-right text-sky-700 font-semibold">'+actions+'</td></tr>';
   }).join('');
   byId('history-list').innerHTML = (state.history || []).map(h => '<div class="px-6 py-3 text-sm"><b>'+escapeText(h.ticket)+' · '+escapeText(h.name)+'</b><span class="text-slate-500"> — '+escapeText(labels[h.department]||h.department)+' · '+escapeText(h.calledAt)+'</span></div>').join('') || '<p class="p-6 text-sm text-slate-500">Chưa có lượt gọi nào.</p>';
   if (!selectedPatient()) {
@@ -126,7 +130,10 @@ async function callAfterUpdate(department) {
 
 for (const id of ['btn-seed-demo','btn-card-doctors','btn-card-locations']) byId(id).remove();
 for (const el of document.querySelectorAll('.symptom-chip')) el.remove();
-byId('input-age').max='120';
+const currentYear = new Date().getFullYear();
+byId('input-birth-year').min = currentYear - 120;
+byId('input-birth-year').max = currentYear;
+byId('input-dept').addEventListener('change',()=>{byId('input-doctor').textContent=(rooms.find(room=>room.department===byId('input-dept').value)||{}).doctor||'Chưa có thông tin';});
 byId('filter-priority').insertAdjacentHTML('beforeend','<option value="urgent">Cấp cứu (mức 1–2)</option>');
 byId('filter-status').insertAdjacentHTML('beforeend','<option value="absent">Vắng mặt</option><option value="cancelled">Đã hủy</option>');
 byId('btn-call-next').insertAdjacentHTML('afterend', '<div class="grid grid-cols-2 gap-2 mt-3"><button type="button" id="btn-recall" class="bg-white/20 rounded-xl py-2 text-xs font-bold">Gọi lại</button><button type="button" id="btn-complete" class="bg-white/20 rounded-xl py-2 text-xs font-bold">Hoàn tất khám</button><button type="button" id="btn-absent" class="bg-white/20 rounded-xl py-2 text-xs font-bold">Đánh dấu vắng mặt</button><button type="button" id="btn-emergency" class="bg-white/20 rounded-xl py-2 text-xs font-bold">Ưu tiên cấp cứu</button></div><div class="flex gap-2 mt-3"><select id="transfer-dept" aria-label="Khoa chuyển đến" class="w-full px-3 py-2 rounded-xl text-slate-800 text-xs"><option value="">Chọn khoa</option></select><button type="button" id="btn-transfer-dept" class="bg-white/20 rounded-xl px-3 text-xs font-bold whitespace-nowrap">Chuyển khoa</button></div><p class="text-xs text-sky-100 mt-2">Chọn bệnh nhân đang khám trong bảng để cập nhật lượt.</p>');
@@ -146,9 +153,9 @@ byId('queue-table-body').addEventListener('click',async e=>{
   if(await action(routes[b.dataset.action],{ticket,triage:'1'},'Đã cập nhật phiếu '+ticket) && b.dataset.action==='call'){activeTicket=ticket;render();sound();}
 });
 byId('intake-form').addEventListener('submit',async e=>{
-  e.preventDefault();const age=Number(byId('input-age').value);
-  if(!Number.isInteger(age)||age<0||age>120){message('Tuổi phải từ 0 đến 120.',true);return;}
-  if(await action('/api/register',{name:byId('input-name').value.trim(),age,triage:byId('input-priority').value,symptom:byId('input-symptoms').value.trim(),department:byId('input-dept').value},'Đã tiếp nhận bệnh nhân.')) e.target.reset();
+  e.preventDefault();const birthYear=Number(byId('input-birth-year').value), nowYear=new Date().getFullYear();
+  if(!Number.isInteger(birthYear)||birthYear<nowYear-120||birthYear>nowYear){message('Năm sinh không hợp lệ.',true);return;}
+  if(await action('/api/register',{name:byId('input-name').value.trim(),birthYear,gender:byId('input-gender').value,category:byId('input-category').value,triage:byId('input-priority').value,symptom:byId('input-symptoms').value.trim(),department:byId('input-dept').value},'Đã tiếp nhận bệnh nhân.')) { e.target.reset(); byId('input-doctor').textContent='Chọn phòng khám'; }
 });
 for(const id of ['filter-search','filter-dept','filter-priority','filter-status','dispatch-dept']) byId(id).addEventListener('input',render);
 byId('header-department').addEventListener('change',()=>{byId('filter-dept').value=byId('header-department').value;byId('dispatch-dept').value=byId('header-department').value;render();});

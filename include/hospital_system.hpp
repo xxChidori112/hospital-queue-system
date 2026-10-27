@@ -20,6 +20,9 @@ struct Patient {
     std::string ticket;
     std::string name;
     int age = 0;
+    int birthYear = 0; // 0: hồ sơ cũ chưa có năm sinh.
+    std::string gender;
+    std::string category;
     std::string symptom;
     std::string department;
     int triageLevel = 5; // 1: nguy kich, 5: thong thuong
@@ -60,7 +63,8 @@ public:
     HospitalSystem& operator=(const HospitalSystem&) = delete;
 
     Patient registerPatient(std::string name, int age, std::string symptom,
-                            int triageLevel, std::string department = "");
+                            int triageLevel, std::string department = "", int birthYear = 0,
+                            std::string gender = "", std::string category = "");
     bool transferToEmergency(const std::string& ticket, int triageLevel = 1);
     std::optional<Patient> callNextPatient(const std::string& department = "");
     std::optional<Patient> callSpecificPatient(const std::string& ticket);

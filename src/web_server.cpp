@@ -107,6 +107,9 @@ std::string patientJson(const Patient& patient, const HospitalSystem& system) {
     out << "{\"ticket\":\"" << jsonEscape(patient.ticket)
         << "\",\"name\":\"" << jsonEscape(patient.name)
         << "\",\"age\":" << patient.age
+        << ",\"birthYear\":" << patient.birthYear
+        << ",\"gender\":\"" << jsonEscape(patient.gender)
+        << "\",\"category\":\"" << jsonEscape(patient.category) << "\""
         << ",\"symptom\":\"" << jsonEscape(patient.symptom)
         << "\",\"department\":\"" << jsonEscape(patient.department)
         << "\",\"triageLevel\":" << patient.triageLevel
@@ -235,10 +238,14 @@ void handleRequest(Socket client, HospitalSystem& system) {
 
         const auto form = parseForm(request.body);
         if (request.path == "/api/register") {
-            const int age = std::stoi(field(form, "age"));
+            const auto birthYearText = field(form, "birthYear");
+            const int birthYear = birthYearText.empty() ? 0 : std::stoi(birthYearText);
+            const auto timestamp = HospitalSystem::currentTime();
+            const int age = birthYear ? std::stoi(timestamp.substr(timestamp.size() - 4)) - birthYear : std::stoi(field(form, "age"));
             const int triage = std::stoi(field(form, "triage"));
             auto patient = system.registerPatient(field(form, "name"), age, field(form, "symptom"),
-                                                  triage, field(form, "department"));
+                                                  triage, field(form, "department"), birthYear,
+                                                  field(form, "gender"), field(form, "category"));
             sendResponse(client, 200, "application/json", "{\"ok\":true,\"message\":\"Da tiep nhan " +
                          jsonEscape(patient.ticket) + "\"}");
         } else if (request.path == "/api/call-next") {
