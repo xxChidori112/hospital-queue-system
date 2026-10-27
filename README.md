@@ -12,6 +12,18 @@ Phiên bản giao diện V2 có bảng điều phối mới, thống kê hàng �
 - Lưu hồ sơ, trạng thái khám và lịch sử gọi vào SQLite. Dữ liệu được nạp lại khi máy chủ khởi động lại.
 - Ước tính thời gian chờ theo hàng đợi của khoa.
 
+## Giải thích Queue khi thuyết trình
+
+Queue trong `include/circular_queue.hpp` là hàng đợi FIFO bằng mảng vòng:
+
+- `data_` là mảng lưu phần tử; `front_` là vị trí đầu hàng; `count_` là số phần tử.
+- `push()` thêm vào vị trí `(front_ + count_) % data_.size()`; `front()` xem phần tử đầu; `pop()` lấy phần tử đầu và dịch `front_` sang vị trí kế tiếp.
+- Khi đầy, `grow()` tạo mảng lớn gấp đôi và chuyển các phần tử theo đúng thứ tự chờ. Phép `%` giúp quay lại đầu mảng khi đến cuối.
+- Ví dụ: thêm A, B, C rồi lấy một lần sẽ nhận A; thêm D thì thứ tự còn lại là B, C, D.
+- Mỗi khoa có một Queue thông thường. Bệnh nhân cấp cứu dùng Priority Queue riêng; `operator<` quyết định mức ưu tiên và thứ tự đến.
+
+`std::vector` chỉ dùng cấp phát mảng động; các thao tác Queue được tự cài đặt. `push()` thường là O(1), O(n) khi mở rộng; `pop()` và `front()` là O(1).
+
 ## Chạy trên Windows với MSYS2 GCC
 
 Cài thư viện SQLite trong terminal **MSYS2 UCRT64**:

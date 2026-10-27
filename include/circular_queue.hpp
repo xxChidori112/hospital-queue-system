@@ -1,71 +1,64 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
-// Queue FIFO dùng mảng vòng động, tự quản lý bộ nhớ, không dùng std::queue.
+// Queue FIFO tự cài đặt bằng mảng vòng; vector chỉ quản lý vùng nhớ của mảng.
 template <typename T>
 class CircularQueue {
 public:
     explicit CircularQueue(std::size_t initialCapacity = 8)
-        : data_(std::make_unique<T[]>(initialCapacity == 0 ? 1 : initialCapacity)),
-          capacity_(initialCapacity == 0 ? 1 : initialCapacity) {}
+        : data_(initialCapacity == 0 ? 1 : initialCapacity) {}
 
     CircularQueue(const CircularQueue&) = delete;
     CircularQueue& operator=(const CircularQueue&) = delete;
     CircularQueue(CircularQueue&&) noexcept = default;
     CircularQueue& operator=(CircularQueue&&) noexcept = default;
 
-    [[nodiscard]] bool empty() const noexcept { return size_ == 0; }
-    [[nodiscard]] std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] bool empty() const noexcept { return count_ == 0; }
+    [[nodiscard]] std::size_t size() const noexcept { return count_; }
 
-    void push(const T& value) {
-        ensureCapacity();
-        data_[(head_ + size_) % capacity_] = value;
-        ++size_;
+    // Thêm cuối: vị trí cuối = (đầu + số phần tử) % kích thước mảng.
+    void push(T value) {
+        if (count_ == data_.size()) grow();
+        std::size_t rear = (front_ + count_) % data_.size();
+        data_[rear] = std::move(value);
+        ++count_;
     }
 
-    void push(T&& value) {
-        ensureCapacity();
-        data_[(head_ + size_) % capacity_] = std::move(value);
-        ++size_;
-    }
-
+    // Lấy phần tử ở đầu, sau đó chuyển đầu sang vị trí kế tiếp.
     T pop() {
         if (empty()) throw std::out_of_range("Khong the lay phan tu tu Queue rong.");
-        T value = std::move(data_[head_]);
-        head_ = (head_ + 1) % capacity_;
-        --size_;
-        if (size_ == 0) head_ = 0;
+        T value = std::move(data_[front_]);
+        front_ = (front_ + 1) % data_.size();
+        --count_;
         return value;
     }
 
     T& front() {
         if (empty()) throw std::out_of_range("Queue rong.");
-        return data_[head_];
+        return data_[front_];
     }
 
     const T& front() const {
         if (empty()) throw std::out_of_range("Queue rong.");
-        return data_[head_];
+        return data_[front_];
     }
 
 private:
-    void ensureCapacity() {
-        if (size_ < capacity_) return;
-        const std::size_t newCapacity = capacity_ * 2;
-        auto expanded = std::make_unique<T[]>(newCapacity);
-        for (std::size_t i = 0; i < size_; ++i)
-            expanded[i] = std::move(data_[(head_ + i) % capacity_]);
-        data_ = std::move(expanded);
-        capacity_ = newCapacity;
-        head_ = 0;
+    // Khi đầy, chuyển các phần tử theo thứ tự FIFO sang mảng lớn gấp đôi.
+    void grow() {
+        std::vector<T> larger(data_.size() * 2);
+        for (std::size_t i = 0; i < count_; ++i) {
+            larger[i] = std::move(data_[(front_ + i) % data_.size()]);
+        }
+        data_ = std::move(larger);
+        front_ = 0;
     }
 
-    std::unique_ptr<T[]> data_;
-    std::size_t capacity_;
-    std::size_t size_ = 0;
-    std::size_t head_ = 0;
+    std::vector<T> data_;       // Mảng lưu phần tử.
+    std::size_t front_ = 0;     // Vị trí phần tử đầu tiên.
+    std::size_t count_ = 0;     // Số phần tử đang chờ.
 };
