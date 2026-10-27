@@ -84,6 +84,7 @@
     .utc-header select{min-width:210px;max-width:280px;padding:11px 14px;border-radius:12px;border:1px solid #165485;background:#0b3d6d;color:#fff;font-size:12px;font-weight:600}
     .utc-header-status{text-align:right;font-size:11px;color:#c6e6f7;white-space:nowrap}.utc-header-status strong{display:block;color:#72e1c0;font-size:12px}.utc-header-notice{display:flex;align-items:center;gap:10px;border-top:1px solid #ffc43c;background:#0b3c69;padding:8px 20px;color:#e2f1fb;font-size:12px}.utc-header-notice b{color:#ffcf52}
     .utc-waiting-link{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:10px;background:#ffbf36;color:#082f52;padding:10px 14px;font-size:12px;font-weight:800;text-decoration:none}.utc-waiting-link:hover{background:#ffd36b}.utc-waiting-link:focus-visible{outline:3px solid #fff;outline-offset:3px}
+    #waiting-dialog::backdrop{background:#08273e99;backdrop-filter:blur(3px)}
     @media(max-width:800px){.utc-header-main{flex-wrap:wrap;gap:12px}.utc-header-brand{min-width:0;flex:1}.utc-header-brand strong{font-size:12px}.utc-header select{flex:1;max-width:none;min-width:160px}.utc-header-status{text-align:left}.utc-header-logo{width:48px;height:48px}.utc-header-notice{font-size:11px;padding:8px 14px}}
     .room-section{padding:26px clamp(20px,4vw,40px);background:#f1f7fa;border-top:1px solid #dceaf1}
     .room-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
@@ -100,7 +101,7 @@
       <div class="utc-header-brand"><strong>Phân hiệu Trường Đại học Giao thông Vận tải tại TP. Hồ Chí Minh</strong><span>Trung tâm Y tế &amp; Chăm sóc sức khỏe SV – CBNV · CareQueue</span></div>
       <select id="header-department" aria-label="Chọn khoa để lọc hàng đợi"><option value="">Tất cả các khoa / phòng khám</option></select>
       <div class="utc-header-status"><strong id="header-connection">Đang kết nối</strong><span id="header-clock"></span></div>
-      <a href="/waiting" target="_blank" rel="noopener" class="utc-waiting-link">Màn hình chờ ↗</a>
+      <button type="button" id="btn-waiting-screen" class="utc-waiting-link" aria-haspopup="dialog" aria-controls="waiting-dialog">Màn hình chờ</button>
     </div>
     <div class="utc-header-notice"><b>THÔNG BÁO</b><span>Tiếp nhận, phân luồng và điều phối lượt khám bệnh.</span></div>
   </header>
@@ -585,5 +586,12 @@
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
 
   <script src="/app.js" defer></script>
+  <dialog id="waiting-dialog" aria-labelledby="waiting-dialog-title" style="padding:0;border:0;border-radius:16px;width:96vw;max-width:1800px;height:94vh;max-height:94vh;overflow:hidden;box-shadow:0 20px 80px #0005">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;background:#062c51;color:white">
+      <strong id="waiting-dialog-title">Màn hình chờ khám</strong>
+      <button id="close-waiting-screen" type="button" style="border:1px solid #ffffff80;border-radius:8px;padding:7px 15px;background:#ffffff20;color:white;font:inherit;cursor:pointer">Đóng ✕</button>
+    </div>
+    <iframe id="waiting-frame" title="Số thứ tự chờ khám theo phòng" allowfullscreen style="display:block;border:0;width:100%;height:calc(100% - 64px);background:#eef7fc"></iframe>
+  </dialog>
 </body>
 </html>

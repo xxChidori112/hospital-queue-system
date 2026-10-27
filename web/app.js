@@ -169,4 +169,11 @@ for(const id of ['btn-top-appointment','btn-hero-intake'])byId(id).addEventListe
 byId('btn-hero-queue').addEventListener('click',()=>scrollToId('panel-queue'));
 byId('dispatch-dept').addEventListener('change',render);
 function clock(){const now=new Date();byId('live-clock').textContent=now.toLocaleTimeString('vi-VN');byId('header-clock').textContent=now.toLocaleString('vi-VN');}
+const waitingDialog = byId('waiting-dialog');
+byId('btn-waiting-screen').addEventListener('click',()=>{
+  byId('waiting-frame').src='/waiting';
+  waitingDialog.showModal();
+});
+byId('close-waiting-screen').addEventListener('click',()=>waitingDialog.close());
+waitingDialog.addEventListener('close',()=>byId('waiting-frame').removeAttribute('src'));
 clock();setInterval(clock,1000);refresh();setInterval(refresh,5000);

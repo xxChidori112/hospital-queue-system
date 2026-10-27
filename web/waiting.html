@@ -19,7 +19,7 @@
 <body>
 <header>
   <div class="brand"><div class="mark" aria-hidden="true">+</div><div><strong>CareQueue · Màn hình chờ khám</strong><span>Phân hiệu Trường Đại học Giao thông Vận tải tại TP. Hồ Chí Minh</span></div></div>
-  <div class="header-actions"><div class="clock"><div id="clock"></div><div id="connection" class="connection" role="status">Đang kết nối...</div></div><button id="fullscreen" type="button">Toàn màn hình</button><a href="/">Về trang điều phối</a></div>
+  <div class="header-actions"><div class="clock"><div id="clock"></div><div id="connection" class="connection" role="status">Đang kết nối...</div></div><button id="fullscreen" type="button">Toàn màn hình</button><a id="return-link" href="/">Về trang điều phối</a></div>
 </header>
 <main>
   <div class="intro"><div><div class="eyebrow">Trung tâm y tế · UTC2</div><h1>Theo dõi lượt khám</h1><p>Vui lòng theo dõi mã phiếu và đến đúng phòng khi được gọi.</p></div><div class="summary"><strong id="total">—</strong> lượt đang chờ</div></div>
@@ -40,6 +40,7 @@ const rooms = [
 ];
 const legacyRooms = [{id:'Tim mach',number:'—',name:'Tim mạch (khoa cũ)'},{id:'Noi tiet',number:'—',name:'Nội tiết (khoa cũ)'}];
 const $ = id => document.getElementById(id);
+if (window.self !== window.top) $('return-link').hidden = true;
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function render(state) {
   const waiting = state.waiting || [], active = state.active || [];
