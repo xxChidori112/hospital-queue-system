@@ -84,6 +84,11 @@
     .utc-header select{min-width:210px;max-width:280px;padding:11px 14px;border-radius:12px;border:1px solid #165485;background:#0b3d6d;color:#fff;font-size:12px;font-weight:600}
     .utc-header-status{text-align:right;font-size:11px;color:#c6e6f7;white-space:nowrap}.utc-header-status strong{display:block;color:#72e1c0;font-size:12px}.utc-header-notice{display:flex;align-items:center;gap:10px;border-top:1px solid #ffc43c;background:#0b3c69;padding:8px 20px;color:#e2f1fb;font-size:12px}.utc-header-notice b{color:#ffcf52}
     @media(max-width:800px){.utc-header-main{flex-wrap:wrap;gap:12px}.utc-header-brand{min-width:0;flex:1}.utc-header-brand strong{font-size:12px}.utc-header select{flex:1;max-width:none;min-width:160px}.utc-header-status{text-align:left}.utc-header-logo{width:48px;height:48px}.utc-header-notice{font-size:11px;padding:8px 14px}}
+    .room-section{padding:26px clamp(20px,4vw,40px);background:#f1f7fa;border-top:1px solid #dceaf1}
+    .room-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+    .room-card{text-align:left;padding:14px;background:#fff;border:1px solid #dce8ef;border-radius:16px;color:#17364e;min-width:0;cursor:pointer}
+    .room-card:hover,.room-card.selected{border-color:#168cc5;box-shadow:0 0 0 2px #168cc533}.room-card:focus-visible{outline:3px solid #168cc5;outline-offset:2px}
+    .room-card-top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px}.room-card-top b{background:#eaf2f8;border-radius:7px;padding:4px 7px}.room-card-top span{background:#dff3fb;color:#06648f;border-radius:99px;padding:3px 7px}.room-card>strong{display:block;font-size:13px;margin-top:10px}.room-card small{display:block;color:#53748a;margin-top:4px;font-size:11px}
   </style>
 </head>
 <body class="min-h-screen py-4 sm:py-8 px-2 sm:px-6 lg:px-10 selection:bg-sky-100 selection:text-sky-900">
@@ -350,6 +355,7 @@
     <!-- 3. "OUR MEDICAL SERVICES" SECTION (Standing 3D Doctor + Floating Specialty Pills on Left, Details on Right) -->
 
 
+    <section class="room-section" aria-labelledby="room-heading"><h2 id="room-heading" class="text-xl font-extrabold text-slate-800">Danh sách phòng khám</h2><p class="text-xs text-slate-500 mt-1">Chọn phòng để lọc hàng đợi và gọi bệnh nhân. Tên bác sĩ theo thông tin bạn cung cấp.</p><div id="room-list" class="room-list"></div></section>
     <!-- 4. "OUR SPECIALITY" BANNER (Matches the Rounded Blue Banner with Stethoscope & Online Dispatch) -->
     <section class="bg-[#eef7ff] px-6 sm:px-10 py-12 border-y border-sky-100/80">
       <div class="text-center max-w-xl mx-auto mb-8">

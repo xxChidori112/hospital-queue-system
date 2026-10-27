@@ -1,6 +1,17 @@
 'use strict';
 const byId = id => document.getElementById(id);
-const labels = {'Kham tong quat':'Khám tổng quát','Tim mach':'Tim mạch','Noi tiet':'Nội tiết','Nhi':'Nhi','Chan thuong':'Chấn thương'};
+const rooms = [
+  {department:'Kham tong quat', number:'101', name:'Khoa Nội Tổng Hợp', doctor:'BS. CKII. Nguyễn Văn An'},
+  {department:'Chan thuong', number:'102', name:'Khoa Ngoại Chấn Thương', doctor:'BS. CKI. Trần Thị Bình'},
+  {department:'Nhi', number:'103', name:'Khoa Nhi & Sơ Sinh', doctor:'BS. Lê Hoàng Nam'},
+  {department:'Mat', number:'201', name:'Khoa Mắt & Thị Lực', doctor:'BS. CKI. Phạm Minh Đức'},
+  {department:'Tai mui hong', number:'202', name:'Khoa Tai Mũi Họng', doctor:'BS. CKII. Vũ Thị Thanh'},
+  {department:'Chan doan hinh anh', number:'301', name:'Chẩn Đoán Hình Ảnh', doctor:'BS. Nguyễn Quốc Anh'},
+  {department:'Cap cuu UTC2', number:'100', name:'Khoa Cấp Cứu UTC2', doctor:'BS. CKII. Đặng Văn Hùng'}
+];
+const labels = Object.fromEntries(rooms.map(room => [room.department, 'P.'+room.number+' — '+room.name]));
+labels['Tim mach'] = 'Tim mạch (khoa cũ)';
+labels['Noi tiet'] = 'Nội tiết (khoa cũ)';
 const statuses = {'Dang cho':'Đang chờ','Dang kham':'Đang khám','Da kham xong':'Đã hoàn tất','Vang mat':'Vắng mặt','Da huy':'Đã hủy'};
 let state = {patients:[], waiting:[], history:[], departments:[]};
 let activeTicket = '';
@@ -57,6 +68,11 @@ function render() {
   fillDepartments('input-dept','Tự động phân luồng'); fillDepartments('transfer-dept','Chọn khoa');
   fillDepartments('header-department','Tất cả các khoa / phòng khám');
   byId('header-department').value = byId('filter-dept').value;
+  byId('room-list').innerHTML = rooms.map(room => {
+    const count = waiting.filter(p => p.department === room.department).length;
+    const selected = byId('filter-dept').value === room.department;
+    return '<button type="button" data-room="'+escapeText(room.department)+'" aria-pressed="'+selected+'" class="room-card'+(selected ? ' selected' : '')+'"><span class="room-card-top"><b>PHÒNG '+room.number+'</b><span>'+count+' chờ</span></span><strong>'+escapeText(room.name)+'</strong><small>'+escapeText(room.doctor)+'</small></button>';
+  }).join('');
   const q = byId('filter-search').value.toLocaleLowerCase('vi').trim(), dept = byId('filter-dept').value;
   const priority = byId('filter-priority').value, status = byId('filter-status').value;
   const statusKey = {'Dang cho':'waiting','Dang kham':'examining','Da kham xong':'completed','Vang mat':'absent','Da huy':'cancelled'};
@@ -80,7 +96,7 @@ function render() {
   const current = selectedPatient();
   byId('hero-active-code').textContent = current ? current.ticket : '—';
   byId('hero-active-name').textContent = current ? current.name+' ('+current.age+' tuổi)' : 'Chưa có bệnh nhân được chọn';
-  byId('hero-active-dept').textContent = current ? 'Khoa '+(labels[current.department]||current.department) : 'Chưa có lượt khám';
+  byId('hero-active-dept').textContent = current ? (labels[current.department]||current.department) : 'Chưa có lượt khám';
   byId('hero-active-room').textContent = '';
   byId('hero-active-status').textContent = current ? 'Đang khám' : 'Chưa có lượt gọi';
   byId('hero-active-priority').textContent = current ? 'Mức '+current.triageLevel : '';
@@ -136,6 +152,7 @@ byId('intake-form').addEventListener('submit',async e=>{
 });
 for(const id of ['filter-search','filter-dept','filter-priority','filter-status','dispatch-dept']) byId(id).addEventListener('input',render);
 byId('header-department').addEventListener('change',()=>{byId('filter-dept').value=byId('header-department').value;byId('dispatch-dept').value=byId('header-department').value;render();});
+byId('room-list').addEventListener('click',event=>{const button=event.target.closest('button[data-room]');if(!button)return;byId('filter-dept').value=button.dataset.room;byId('dispatch-dept').value=button.dataset.room;render();});
 byId('btn-reset-filters').addEventListener('click',()=>{byId('filter-search').value='';byId('filter-dept').value='';byId('filter-priority').value='ALL';byId('filter-status').value='ALL';render();});
 byId('btn-card-filter-urgent').addEventListener('click',()=>{byId('filter-priority').value='urgent';byId('filter-status').value='waiting';render();scrollToId('panel-queue');});
 byId('btn-sound-toggle').addEventListener('click',()=>{soundEnabled=!soundEnabled;byId('label-sound').textContent='Âm báo: '+(soundEnabled?'Bật':'Tắt');if(soundEnabled)sound();});

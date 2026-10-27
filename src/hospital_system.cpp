@@ -14,7 +14,8 @@
 #include <utility>
 
 HospitalSystem::HospitalSystem(const std::string& databasePath)
-    : departments_{"Kham tong quat", "Tim mach", "Noi tiet", "Nhi", "Chan thuong"} {
+    : departments_{"Kham tong quat", "Chan thuong", "Nhi", "Mat", "Tai mui hong",
+                   "Chan doan hinh anh", "Cap cuu UTC2", "Tim mach", "Noi tiet"} {
     for (const auto& department : departments_) regularQueues_.try_emplace(department);
     initializeDatabase(databasePath);
 }

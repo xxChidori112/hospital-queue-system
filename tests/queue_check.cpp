@@ -37,4 +37,10 @@ int main() {
     assert(called && called->ticket == transferred.ticket);
     assert(hospital.markAbsent(transferred.ticket));
     assert(!hospital.markAbsent(transferred.ticket));
+
+    for (const auto& dept : {"Kham tong quat", "Chan thuong", "Nhi", "Mat", "Tai mui hong", "Chan doan hinh anh", "Cap cuu UTC2", "Tim mach", "Noi tiet"}) {
+        auto patient = hospital.registerPatient("Kiem tra", 25, "", 5, dept);
+        auto next = hospital.callNextPatient(dept);
+        assert(next && next->ticket == patient.ticket && next->department == dept);
+    }
 }

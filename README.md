@@ -12,6 +12,9 @@ Phiên bản giao diện V2 có bảng điều phối mới, thống kê hàng �
 - Lưu hồ sơ, trạng thái khám và lịch sử gọi vào SQLite. Dữ liệu được nạp lại khi máy chủ khởi động lại.
 - Ước tính thời gian chờ theo hàng đợi của khoa.
 - Gọi trực tiếp một phiếu đang chờ, gọi lại bằng âm báo, đánh dấu vắng mặt, hủy phiếu chờ hoặc chuyển bệnh nhân đang khám sang hàng đợi khoa khác.
+- Hiển thị bảy phòng khám và tên bác sĩ theo mẫu, cùng số bệnh nhân đang chờ. Danh sách bác sĩ là thông tin tĩnh theo ảnh, không phản ánh ca trực thực tế.
+
+Các khoa cũ Tim mạch và Nội tiết vẫn được giữ để có thể truy cập và gọi hồ sơ đã lưu trước đó; các phòng mới chưa có thời lượng riêng dùng mức ước tính mặc định 15 phút.
 
 Giao diện MedCare dùng `web/index.html` và `web/app.js`, kết nối trực tiếp với máy chủ C++ và SQLite. Nút gọi trực tiếp do người điều phối chọn nên có thể bỏ qua thứ tự ưu tiên; nút gọi lượt tiếp theo vẫn theo thứ tự cấp cứu và FIFO. Sau khi hoàn tất, đánh dấu vắng mặt hoặc chuyển khoa, hệ thống gọi lượt tiếp theo của khoa cũ nếu có người chờ. Gọi lại phát âm báo trên thiết bị hiện tại và hiển thị thông báo; không phát tiếng nói qua hệ thống loa bệnh viện.
 
