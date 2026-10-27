@@ -55,6 +55,8 @@ function render() {
   byId('kpi-wait-avg').textContent = waits.length ? 'Chờ dự kiến trung bình: '+Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)+' phút' : 'Chưa có bệnh nhân chờ';
   fillDepartments('dispatch-dept','Tất cả khoa'); fillDepartments('filter-dept','Tất cả khoa');
   fillDepartments('input-dept','Tự động phân luồng'); fillDepartments('transfer-dept','Chọn khoa');
+  fillDepartments('header-department','Tất cả các khoa / phòng khám');
+  byId('header-department').value = byId('filter-dept').value;
   const q = byId('filter-search').value.toLocaleLowerCase('vi').trim(), dept = byId('filter-dept').value;
   const priority = byId('filter-priority').value, status = byId('filter-status').value;
   const statusKey = {'Dang cho':'waiting','Dang kham':'examining','Da kham xong':'completed','Vang mat':'absent','Da huy':'cancelled'};
@@ -92,8 +94,8 @@ function render() {
   byId('next-ticket-preview').textContent = 'Mã phiếu được cấp tự động';
 }
 async function refresh() {
-  try { state = await request('/api/state'); byId('connection-status').textContent='Đã kết nối'; render(); }
-  catch (_) { byId('connection-status').textContent='Mất kết nối'; }
+  try { state = await request('/api/state'); byId('connection-status').textContent='Đã kết nối'; byId('header-connection').textContent='Đã kết nối'; render(); }
+  catch (_) { byId('connection-status').textContent='Mất kết nối'; byId('header-connection').textContent='Mất kết nối'; }
 }
 async function action(url, data, success) {
   try { const result = await request(url, data); if (result.ticket) activeTicket=result.ticket; await refresh(); message(success || result.message); return true; }
@@ -133,6 +135,7 @@ byId('intake-form').addEventListener('submit',async e=>{
   if(await action('/api/register',{name:byId('input-name').value.trim(),age,triage:byId('input-priority').value,symptom:byId('input-symptoms').value.trim(),department:byId('input-dept').value},'Đã tiếp nhận bệnh nhân.')) e.target.reset();
 });
 for(const id of ['filter-search','filter-dept','filter-priority','filter-status','dispatch-dept']) byId(id).addEventListener('input',render);
+byId('header-department').addEventListener('change',()=>{byId('filter-dept').value=byId('header-department').value;byId('dispatch-dept').value=byId('header-department').value;render();});
 byId('btn-reset-filters').addEventListener('click',()=>{byId('filter-search').value='';byId('filter-dept').value='';byId('filter-priority').value='ALL';byId('filter-status').value='ALL';render();});
 byId('btn-card-filter-urgent').addEventListener('click',()=>{byId('filter-priority').value='urgent';byId('filter-status').value='waiting';render();scrollToId('panel-queue');});
 byId('btn-sound-toggle').addEventListener('click',()=>{soundEnabled=!soundEnabled;byId('label-sound').textContent='Âm báo: '+(soundEnabled?'Bật':'Tắt');if(soundEnabled)sound();});
@@ -140,5 +143,5 @@ for(const button of document.querySelectorAll('.nav-tab-btn'))button.addEventLis
 for(const id of ['btn-top-appointment','btn-hero-intake'])byId(id).addEventListener('click',()=>scrollToId('panel-intake'));
 byId('btn-hero-queue').addEventListener('click',()=>scrollToId('panel-queue'));
 byId('dispatch-dept').addEventListener('change',render);
-function clock(){byId('live-clock').textContent=new Date().toLocaleTimeString('vi-VN');}
+function clock(){const now=new Date();byId('live-clock').textContent=now.toLocaleTimeString('vi-VN');byId('header-clock').textContent=now.toLocaleString('vi-VN');}
 clock();setInterval(clock,1000);refresh();setInterval(refresh,5000);
