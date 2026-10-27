@@ -15,6 +15,8 @@ labels['Noi tiet'] = 'Nội tiết (khoa cũ)';
 const statuses = {'Dang cho':'Đang chờ','Dang kham':'Đang khám','Da kham xong':'Đã hoàn tất','Vang mat':'Vắng mặt','Da huy':'Đã hủy'};
 const genders = {male:'Nam',female:'Nữ',other:'Khác',unspecified:'Không cung cấp'};
 const categories = {student_bhyt:'BHYT sinh viên',employee_bhyt:'BHYT cán bộ / nhân viên',other_bhyt:'BHYT khác',service:'Khám dịch vụ',other:'Khác'};
+const priorities = {1:'Nguy kịch',2:'Cấp cứu',3:'Khẩn',4:'Ít khẩn',5:'Thông thường'};
+const priorityLabel = level => 'Mức '+level+' - '+priorities[level];
 let state = {patients:[], waiting:[], history:[], departments:[]};
 let activeTicket = '';
 let soundEnabled = true;
@@ -91,7 +93,7 @@ function render() {
     let actions = p.status === 'Dang cho' ? '<button data-action="call" data-ticket="'+ticket+'">Gọi</button> <button data-action="emergency" data-ticket="'+ticket+'">Cấp cứu</button> <button data-action="cancel" data-ticket="'+ticket+'">Hủy phiếu</button>' :
       p.status === 'Dang kham' ? '<button data-action="select" data-ticket="'+ticket+'">Chọn</button> <button data-action="complete" data-ticket="'+ticket+'">Hoàn tất</button>' : '';
     const details = [p.birthYear ? 'Sinh năm '+p.birthYear : p.age+' tuổi', genders[p.gender], categories[p.category], p.symptom].filter(Boolean).join(' · ');
-    return '<tr><td class="py-3 pl-6 font-bold text-sky-700">'+ticket+'</td><td class="p-3">'+escapeText(p.name)+'<div class="text-xs text-slate-500">'+escapeText(details)+'</div></td><td class="p-3">'+escapeText(labels[p.department]||p.department)+'</td><td class="p-3">Mức '+p.triageLevel+'</td><td class="p-3">'+escapeText(statuses[p.status]||p.status)+'</td><td class="p-3">'+(p.waitMinutes == null ? '—' : p.waitMinutes+' phút')+'</td><td class="p-3 text-right text-sky-700 font-semibold">'+actions+'</td></tr>';
+    return '<tr><td class="py-3 pl-6 font-bold text-sky-700">'+ticket+'</td><td class="p-3">'+escapeText(p.name)+'<div class="text-xs text-slate-500">'+escapeText(details)+'</div></td><td class="p-3">'+escapeText(labels[p.department]||p.department)+'</td><td class="p-3">'+priorityLabel(p.triageLevel)+'</td><td class="p-3">'+escapeText(statuses[p.status]||p.status)+'</td><td class="p-3">'+(p.waitMinutes == null ? '—' : p.waitMinutes+' phút')+'</td><td class="p-3 text-right text-sky-700 font-semibold">'+actions+'</td></tr>';
   }).join('');
   byId('history-list').innerHTML = (state.history || []).map(h => '<div class="px-6 py-3 text-sm"><b>'+escapeText(h.ticket)+' · '+escapeText(h.name)+'</b><span class="text-slate-500"> — '+escapeText(labels[h.department]||h.department)+' · '+escapeText(h.calledAt)+'</span></div>').join('') || '<p class="p-6 text-sm text-slate-500">Chưa có lượt gọi nào.</p>';
   if (!selectedPatient()) {
@@ -103,14 +105,14 @@ function render() {
   byId('hero-active-name').textContent = current ? current.name+' ('+current.age+' tuổi)' : 'Chưa có bệnh nhân được chọn';
   byId('hero-active-dept').textContent = current ? (labels[current.department]||current.department) : 'Chưa có lượt khám';
   byId('hero-active-room').textContent = '';
-  byId('hero-active-status').textContent = current ? 'Đang khám' : 'Chưa có lượt gọi';
-  byId('hero-active-priority').textContent = current ? 'Mức '+current.triageLevel : '';
-  byId('last-called-text').textContent = current ? current.ticket+' · '+current.name : 'Chưa có lượt gọi';
+  byId('hero-active-status').textContent = current ? 'Đang khám' : 'Chưa có lượt đang khám';
+  byId('hero-active-priority').textContent = current ? priorityLabel(current.triageLevel) : '';
+  byId('last-called-text').textContent = current ? current.ticket+' · '+current.name : 'Chưa có lượt đang khám';
   byId('last-called-time').textContent = '';
   for (const id of ['hero-active-box','last-called-text','next-preview-name']) byId(id).style.visibility='visible';
   const next=waiting.find(p => !byId('dispatch-dept').value || p.department === byId('dispatch-dept').value);
   byId('next-preview-name').textContent = next ? next.name : 'Không có bệnh nhân đang chờ';
-  byId('next-preview-priority').textContent = next ? 'Mức '+next.triageLevel : '—';
+  byId('next-preview-priority').textContent = next ? priorityLabel(next.triageLevel) : '—';
   byId('next-preview-meta').textContent = next ? next.ticket+' · '+(labels[next.department]||next.department) : '—';
   byId('next-ticket-preview').textContent = 'Mã phiếu được cấp tự động';
 }

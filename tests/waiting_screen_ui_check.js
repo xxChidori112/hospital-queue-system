@@ -24,6 +24,11 @@ async function main() {
     await context.route('https://media.giphy.com/**', route=>route.fulfill({contentType:'image/gif',body:Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7','base64')}));
     const page = await context.newPage();
     await page.goto(base, {waitUntil:'networkidle'});
+    assert((await page.title()).startsWith('CareQueue UTC2'));
+    assert(!(await page.locator('body').innerText()).includes('MedCare'));
+    assert(await page.evaluate(()=>['input-priority','filter-priority'].every(id=>
+      [...document.getElementById(id).options].filter(o=>Number(o.value)>=1&&Number(o.value)<=5)
+        .every(o=>o.textContent===priorityLabel(Number(o.value))))));
     await page.fill('#input-name','Đang nhập');
     await page.click('#btn-waiting-screen');
     await page.waitForFunction(()=>document.getElementById('waiting-dialog').open);
@@ -71,6 +76,10 @@ async function main() {
     assert.equal(await page.inputValue('#input-name'),'Đang nhập');
     assert.equal(await page.locator('#waiting-frame').getAttribute('src'),null);
     await page.setViewportSize({width:390,height:844});
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    const brandBox=await page.locator('.utc-header-brand').boundingBox();
+    const departmentBox=await page.locator('#header-department').boundingBox();
+    assert(brandBox.width>200 && brandBox.y+brandBox.height<=departmentBox.y, 'Tên đơn vị cần đủ rộng và nằm trên bộ chọn khoa trên điện thoại.');
     await page.click('#btn-waiting-screen');
     await frame.locator('.room').first().waitFor();
     assert((await page.locator('#waiting-dialog').boundingBox()).width<=390);

@@ -20,7 +20,7 @@ Phiên bản giao diện V2 có bảng điều phối mới, thống kê hàng �
 Không tiếp nhận hoặc chuyển bệnh nhân mới vào hai khoa cũ Tim mạch và Nội tiết. Nếu dữ liệu còn hồ sơ thuộc hai khoa này, bộ lọc và gọi lượt vẫn hiển thị chúng để xử lý hồ sơ cũ; các phòng mới chưa có thời lượng riêng dùng mức ước tính mặc định 15 phút.
 Khi khởi động với cơ sở dữ liệu cũ, hệ thống bổ sung cột năm sinh, giới tính và đối tượng; hồ sơ cũ không có các thông tin này sẽ để trống.
 
-Giao diện MedCare dùng `web/index.html` và `web/app.js`, kết nối trực tiếp với máy chủ C++ và SQLite. Nút gọi trực tiếp do người điều phối chọn nên có thể bỏ qua thứ tự ưu tiên; nút gọi lượt tiếp theo vẫn theo thứ tự cấp cứu và FIFO. Sau khi hoàn tất, đánh dấu vắng mặt hoặc chuyển khoa, hệ thống gọi lượt tiếp theo của khoa cũ nếu có người chờ. Gọi lại phát âm báo trên thiết bị hiện tại và hiển thị thông báo; không phát tiếng nói qua hệ thống loa bệnh viện.
+Giao diện CareQueue UTC2 dùng `web/index.html` và `web/app.js`, kết nối trực tiếp với máy chủ C++ và SQLite. Nút gọi trực tiếp do người điều phối chọn nên có thể bỏ qua thứ tự ưu tiên; nút gọi lượt tiếp theo vẫn theo thứ tự cấp cứu và FIFO. Sau khi hoàn tất, đánh dấu vắng mặt hoặc chuyển khoa, hệ thống gọi lượt tiếp theo của khoa cũ nếu có người chờ. Gọi lại phát âm báo trên thiết bị hiện tại và hiển thị thông báo; không phát tiếng nói qua hệ thống loa bệnh viện.
 
 Giao diện tải Tailwind CSS và phông chữ từ CDN nên cần kết nối Internet để hiển thị đầy đủ. Đây là mô hình học tập; không dùng dữ liệu bệnh nhân thật.
 
