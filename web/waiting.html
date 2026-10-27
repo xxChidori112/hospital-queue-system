@@ -81,14 +81,16 @@ $('fullscreen').addEventListener('click',async()=>{
 });
 document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Thoát toàn màn hình':'Toàn màn hình';});
 const memes = [
-  {url:'https://media.giphy.com/media/S2D753TsCrbPsMRTwK/giphy.gif',source:'https://giphy.com/gifs/thumbs-up-cat-car-awesome-S2D753TsCrbPsMRTwK',caption:'Một chiếc like tiếp năng lượng!',alt:'Mèo giơ ngón tay cái vui vẻ'},
+  {url:'https://media.giphy.com/media/3o72F8t9TDi2xVnxOE/giphy.gif',source:'https://giphy.com/gifs/shocked-monkey-stunned-3o72F8t9TDi2xVnxOE',caption:'Ủa, có chuyện gì vậy ta?',alt:'Rối khỉ tròn mắt ngạc nhiên'},
+  {url:'https://media.giphy.com/media/mXwyHomA2kQbQHuh2R/giphy.gif',source:'https://giphy.com/gifs/jumanjiwelcometothejungle-2017-jumanji-mXwyHomA2kQbQHuh2R',caption:'Một chiếc nhướng mày đầy suy tư.',alt:'The Rock nhướng mày với vẻ nghi ngờ'},
+  {url:'https://media1.tenor.com/m/M-gxaGNB8zUAAAAd/shrek-smile.gif',source:'https://tenor.com/view/shrek-smile-gif-3740293814942823221',provider:'Tenor',caption:'Nụ cười rất chi là tự tin.',alt:'Shrek nhìn lên và nở nụ cười'},
   {url:'https://media.giphy.com/media/Yt09iFvD9u5AQ/giphy.gif',source:'https://giphy.com/gifs/cat-kitten-Yt09iFvD9u5AQ',caption:'Giữ tinh thần vui vẻ trong lúc chờ nhé!',alt:'Mèo con phấn khích chuyển động vui nhộn'}
 ];
 let memeIndex=0, memePaused=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function showMeme() {
   const meme=memes[memeIndex], image=$('meme-image');
   image.hidden=true;image.removeAttribute('src');
-  $('meme-caption').textContent=meme.caption;$('meme-source').href=meme.source;
+  $('meme-caption').textContent=meme.caption;$('meme-source').href=meme.source;$('meme-source').textContent='Nguồn: '+(meme.provider||'GIPHY');
   $('meme-status').hidden=false;$('meme-status').textContent=memePaused?'GIF đã tạm dừng.':'Đang tải GIF...';
   $('meme-toggle').textContent=memePaused?'Phát GIF':'Tạm dừng';
   if(!memePaused){image.alt=meme.alt;image.src=meme.url;}

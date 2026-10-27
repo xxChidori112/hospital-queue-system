@@ -22,6 +22,7 @@ async function main() {
     browser = await chromium.launch({headless:true, executablePath:process.argv[3]});
     const context = await browser.newContext({viewport:{width:1440,height:900}});
     await context.route('https://media.giphy.com/**', route=>route.fulfill({contentType:'image/gif',body:Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7','base64')}));
+    await context.route('https://media1.tenor.com/**', route=>route.fulfill({contentType:'image/gif',body:Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7','base64')}));
     const page = await context.newPage();
     await page.goto(base, {waitUntil:'networkidle'});
     await page.fill('#input-name','Đang nhập');
@@ -40,10 +41,12 @@ async function main() {
     assert.notEqual(await frame.locator('#meme-image').getAttribute('src'),firstMeme);
     await frame.locator('#meme-next').click();
     await frame.locator('#meme-image').waitFor({state:'visible'});
-    assert.equal(await frame.locator('#meme-image').getAttribute('src'),firstMeme);
+    assert.notEqual(await frame.locator('#meme-image').getAttribute('src'),firstMeme);
+    const currentMeme = await frame.locator('#meme-image').getAttribute('src');
     const embedded = page.frames().find(f=>f.url()===base+'/waiting');
-    await embedded.waitForFunction(first=>document.getElementById('meme-image').getAttribute('src')!==first,firstMeme,{timeout:15000});
+    await embedded.waitForFunction(current=>document.getElementById('meme-image').getAttribute('src')!==current,currentMeme,{timeout:15000});
     await context.route('https://media.giphy.com/**',route=>route.abort());
+    await context.route('https://media1.tenor.com/**',route=>route.abort());
     await frame.locator('#meme-next').click();
     await frame.locator('#meme-status').filter({hasText:'Không tải được GIF'}).waitFor();
     assert.equal(context.pages().length,1);
