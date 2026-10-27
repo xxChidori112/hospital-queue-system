@@ -20,7 +20,7 @@ async function main() {
       catch (_) { await new Promise(resolve=>setTimeout(resolve,200)); }
     }
     browser = await chromium.launch({headless:true, executablePath:process.argv[3]});
-    const context = await browser.newContext({viewport:{width:1440,height:900}});
+    const context = await browser.newContext({viewport:{width:1440,height:900}, reducedMotion:'reduce'});
     await context.route('https://media.giphy.com/**', route=>route.fulfill({contentType:'image/gif',body:Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7','base64')}));
     const page = await context.newPage();
     await page.goto(base, {waitUntil:'networkidle'});
@@ -33,6 +33,7 @@ async function main() {
     await frame.locator('#meme-image').waitFor({state:'visible'});
     const firstMeme = await frame.locator('#meme-image').getAttribute('src');
     assert(firstMeme.startsWith('https://media.giphy.com/media/'));
+    assert.equal(await frame.locator('#meme-toggle').textContent(),'Tạm dừng', 'GIF tự phát ngay khi mở phòng chờ.');
     await frame.locator('#meme-toggle').click();
     assert.equal(await frame.locator('#meme-image').getAttribute('src'),null);
     await frame.locator('#meme-next').click();
@@ -46,6 +47,11 @@ async function main() {
     const currentMeme = await frame.locator('#meme-image').getAttribute('src');
     const embedded = page.frames().find(f=>f.url()===base+'/waiting');
     await embedded.waitForFunction(current=>document.getElementById('meme-image').getAttribute('src')!==current,currentMeme,{timeout:8000});
+    const catalog = await embedded.evaluate(()=>({count:memes.length,unique:new Set(memes.map(m=>m.url)).size,
+      giphyOnly:memes.every(m=>m.url.startsWith('https://media.giphy.com/media/') && m.source.startsWith('https://giphy.com/gifs/'))}));
+    assert(catalog.count>=100, 'Cần ít nhất 100 GIF.');
+    assert.equal(catalog.unique,catalog.count, 'Mỗi GIF phải có đường dẫn riêng.');
+    assert(catalog.giphyOnly);
     const randomChoices = await embedded.evaluate(()=>{
       const originalRandom=Math.random, originalIndex=memeIndex;
       try {
@@ -54,7 +60,7 @@ async function main() {
         });
       } finally {Math.random=originalRandom;memeIndex=originalIndex;showMeme();}
     });
-    assert.deepEqual(randomChoices,[1,2,3], 'Chọn ngẫu nhiên phải tới được mọi GIF khác ảnh hiện tại.');
+    assert.deepEqual(randomChoices,[1,1+Math.floor((catalog.count-1)/2),catalog.count-1], 'Chọn ngẫu nhiên phải tới được đầu, giữa và cuối danh sách.');
     await context.route('https://media.giphy.com/**',route=>route.abort());
     await frame.locator('#meme-next').click();
     await frame.locator('#meme-status').filter({hasText:'Không tải được GIF'}).waitFor();
