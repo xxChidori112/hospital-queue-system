@@ -21,6 +21,11 @@
 @media(max-width:1100px){.sidebar{gap:12px}.nav a{padding:9px;font-size:12px}.side-bottom{display:none}.columns{grid-template-columns:minmax(0,1fr) 315px}.welcome:after{width:53%}}
 @media(max-width:800px){.sidebar{padding:14px 20px}.nav{display:none}.mobile-menu{display:flex;justify-content:center;gap:4px;padding:6px 10px;border-top:1px solid #edf5f8;overflow:auto}.mobile-menu a{padding:8px 12px;border-radius:8px;color:#43819b;text-decoration:none;white-space:nowrap;font-size:12px}.mobile-menu a:hover{background:#e9f8fc}.university-logo{width:46px;height:46px}.main{padding:0 18px 28px}.welcome{min-height:290px;padding:30px}.welcome h1{font-size:38px}.medical-art{flex-basis:38%}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));padding:14px;gap:10px}.columns{grid-template-columns:1fr}.topbar{padding:16px 0}}
 @media(max-width:550px){.date-pill{display:none}.welcome{display:block;min-height:0;padding:27px 24px}.welcome:after{width:160px;height:160px;right:-80px;top:-80px;opacity:.32}.welcome h1{font-size:34px}.welcome p{font-size:13px}.medical-art{width:185px;margin:20px auto -30px}.medical-art img{max-height:170px}.metrics{margin-bottom:24px}.metric{min-height:95px;padding:14px}.metric-top{font-size:11px}.metric-value{font-size:25px}.metric-symbol{width:30px;height:30px}.card-inner,.form-card{padding:18px}.filters{grid-template-columns:1fr 1fr}.filters select:last-child{grid-column:1/-1}.hero-link{font-size:11px;padding:11px 15px}.brand-name{font-size:19px}.brand-caption{font-size:8px}.topbar{font-size:11px}}
+/* Bố cục lấy cảm hứng từ trang y tế tham chiếu. */
+.app{max-width:1360px}.welcome{background:#fff;min-height:410px;border:1px solid #edf7fa;margin-top:6px}.welcome:after{width:52%;height:650px;top:-170px;right:-65px;background:linear-gradient(150deg,#19b6df,#058dbb)}.welcome h1{font-size:clamp(38px,4vw,57px)}.medical-art{flex-basis:min(42%,430px)}.medical-art img{max-height:380px;filter:drop-shadow(0 18px 24px #11688320)}
+.metrics{padding:28px;background:#e9f8fd;gap:18px}.metric{min-height:132px;padding:22px;border-radius:18px}.metric-value{font-size:34px}.metric-top{font-size:13px}.section-intro{text-align:center;padding:30px 10px 26px}.section-intro span{display:block;color:#0695bd;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.section-intro h2{margin:6px 0;font-size:clamp(23px,2.5vw,30px);font-weight:700;color:#243f50}.section-intro p{margin:0;color:#7893a1;font-size:13px}.next-card,.card{border-radius:20px}.next-card{padding:28px}.card-heading h2{font-size:18px}.footnote{padding:28px 0;color:#7a9aa8}
+@media(max-width:800px){.welcome{min-height:310px;padding:30px}.welcome:after{height:460px;top:-100px}.medical-art{flex-basis:38%}.metrics{padding:16px;gap:10px}.metric{min-height:105px;padding:16px}.metric-value{font-size:28px}.metric-top{font-size:11px}.section-intro{padding:20px 10px}}
+@media(max-width:550px){.welcome{min-height:0}.welcome:after{width:170px;height:170px;right:-85px;top:-85px}.welcome h1{font-size:34px}.medical-art{width:185px;max-width:70%}.metric{min-height:95px;padding:14px}.metric-value{font-size:25px}.section-intro p{font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
@@ -45,6 +50,7 @@
         <div class="metric"><div class="metric-top"><span>Đang khám</span><span class="metric-symbol">⌁</span></div><div class="metric-value" id="consultCount">0</div></div>
         <div class="metric"><div class="metric-top"><span>Tổng hồ sơ</span><span class="metric-symbol">▤</span></div><div class="metric-value" id="totalCount">0</div></div>
       </section>
+      <div class="section-intro"><span>Bàn điều phối</span><h2>Chăm sóc bắt đầu từ đây</h2><p>Theo dõi hàng đợi và tiếp nhận bệnh nhân tại một nơi.</p></div>
       <section class="columns">
         <div class="stack">
           <section class="card" id="queue"><div class="card-inner">
