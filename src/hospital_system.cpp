@@ -15,8 +15,11 @@
 
 HospitalSystem::HospitalSystem(const std::string& databasePath)
     : departments_{"Kham tong quat", "Chan thuong", "Nhi", "Mat", "Tai mui hong",
-                   "Chan doan hinh anh", "Cap cuu UTC2", "Tim mach", "Noi tiet"} {
+                   "Chan doan hinh anh", "Cap cuu UTC2"} {
     for (const auto& department : departments_) regularQueues_.try_emplace(department);
+    // Giữ hàng đợi của hồ sơ cũ để có thể tiếp tục gọi bệnh nhân đã đăng ký.
+    regularQueues_.try_emplace("Tim mach");
+    regularQueues_.try_emplace("Noi tiet");
     initializeDatabase(databasePath);
 }
 
@@ -329,7 +332,7 @@ bool HospitalSystem::cancelPatient(const std::string& ticket) {
 bool HospitalSystem::transferDepartment(const std::string& ticket, const std::string& department) {
     auto it = patients_.find(ticket);
     if (it == patients_.end() || it->second.status != PatientStatus::InConsultation ||
-        regularQueues_.find(department) == regularQueues_.end()) return false;
+        std::find(departments_.begin(), departments_.end(), department) == departments_.end()) return false;
     Patient previous = it->second;
     it->second.department = department;
     it->second.status = PatientStatus::Waiting;
@@ -436,10 +439,10 @@ std::string HospitalSystem::inferDepartment(const std::string& symptom) const {
         return static_cast<char>(std::tolower(c));
     });
     if (text.find("tim") != std::string::npos || text.find("nguc") != std::string::npos ||
-        text.find("heart") != std::string::npos) return "Tim mach";
+        text.find("heart") != std::string::npos) return "Kham tong quat";
     if (text.find("tre em") != std::string::npos || text.find("nhi") != std::string::npos) return "Nhi";
     if (text.find("chan thuong") != std::string::npos || text.find("gay xuong") != std::string::npos) return "Chan thuong";
-    if (text.find("duong huyet") != std::string::npos || text.find("noi tiet") != std::string::npos) return "Noi tiet";
+    if (text.find("duong huyet") != std::string::npos || text.find("noi tiet") != std::string::npos) return "Kham tong quat";
     return "Kham tong quat";
 }
 

@@ -19,26 +19,26 @@ int main() {
     assert(threw);
 
     HospitalSystem hospital(":memory:");
-    auto first = hospital.registerPatient("A", 30, "", 5, "Tim mach");
-    auto second = hospital.registerPatient("B", 30, "", 5, "Tim mach");
-    auto emergency = hospital.registerPatient("C", 30, "", 1, "Tim mach");
-    assert(hospital.callNextPatient("Tim mach")->ticket == emergency.ticket);
-    assert(hospital.callNextPatient("Tim mach")->ticket == first.ticket);
-    assert(hospital.callNextPatient("Tim mach")->ticket == second.ticket);
-    assert(!hospital.callNextPatient("Tim mach"));
+    auto first = hospital.registerPatient("A", 30, "", 5, "Kham tong quat");
+    auto second = hospital.registerPatient("B", 30, "", 5, "Kham tong quat");
+    auto emergency = hospital.registerPatient("C", 30, "", 1, "Kham tong quat");
+    assert(hospital.callNextPatient("Kham tong quat")->ticket == emergency.ticket);
+    assert(hospital.callNextPatient("Kham tong quat")->ticket == first.ticket);
+    assert(hospital.callNextPatient("Kham tong quat")->ticket == second.ticket);
+    assert(!hospital.callNextPatient("Kham tong quat"));
 
-    auto transferred = hospital.registerPatient("D", 40, "", 5, "Tim mach");
-    auto cancelled = hospital.registerPatient("E", 20, "", 5, "Tim mach");
+    auto transferred = hospital.registerPatient("D", 40, "", 5, "Kham tong quat");
+    auto cancelled = hospital.registerPatient("E", 20, "", 5, "Kham tong quat");
     assert(hospital.cancelPatient(cancelled.ticket));
     assert(hospital.callSpecificPatient(transferred.ticket));
     assert(hospital.transferDepartment(transferred.ticket, "Nhi"));
-    assert(!hospital.callNextPatient("Tim mach"));
+    assert(!hospital.callNextPatient("Kham tong quat"));
     auto called = hospital.callNextPatient("Nhi");
     assert(called && called->ticket == transferred.ticket);
     assert(hospital.markAbsent(transferred.ticket));
     assert(!hospital.markAbsent(transferred.ticket));
 
-    for (const auto& dept : {"Kham tong quat", "Chan thuong", "Nhi", "Mat", "Tai mui hong", "Chan doan hinh anh", "Cap cuu UTC2", "Tim mach", "Noi tiet"}) {
+    for (const auto& dept : {"Kham tong quat", "Chan thuong", "Nhi", "Mat", "Tai mui hong", "Chan doan hinh anh", "Cap cuu UTC2"}) {
         auto patient = hospital.registerPatient("Kiem tra", 25, "", 5, dept);
         auto next = hospital.callNextPatient(dept);
         assert(next && next->ticket == patient.ticket && next->department == dept);

@@ -48,9 +48,10 @@ function sound() {
     oscillator.onended = () => context.close();
   } catch (_) { /* Âm báo phụ thuộc trình duyệt. */ }
 }
-function fillDepartments(id, allLabel) {
+function fillDepartments(id, allLabel, includeLegacy = false) {
   const select = byId(id), previous = select.value;
-  select.innerHTML = '<option value="">'+allLabel+'</option>' + state.departments.map(d => '<option value="'+escapeText(d)+'">'+escapeText(labels[d] || d)+'</option>').join('');
+  const legacy = includeLegacy ? ['Tim mach','Noi tiet'].filter(d => state.patients.some(p => p.department === d)) : [];
+  select.innerHTML = '<option value="">'+allLabel+'</option>' + [...state.departments,...legacy].map(d => '<option value="'+escapeText(d)+'">'+escapeText(labels[d] || d)+'</option>').join('');
   if ([...select.options].some(option => option.value === previous)) select.value = previous;
 }
 function selectedPatient() {
@@ -66,10 +67,10 @@ function render() {
   byId('kpi-completed-sub').textContent = 'Đã hoàn tất: '+patients.filter(p => p.status === 'Da kham xong').length+' ca';
   const waits = waiting.map(p => p.waitMinutes).filter(n => typeof n === 'number');
   byId('kpi-wait-avg').textContent = waits.length ? 'Chờ dự kiến trung bình: '+Math.round(waits.reduce((a,b)=>a+b,0)/waits.length)+' phút' : 'Chưa có bệnh nhân chờ';
-  fillDepartments('dispatch-dept','Tất cả khoa'); fillDepartments('filter-dept','Tất cả khoa');
+  fillDepartments('dispatch-dept','Tất cả khoa',true); fillDepartments('filter-dept','Tất cả khoa',true);
   fillDepartments('input-dept','Chọn khoa / phòng khám'); fillDepartments('transfer-dept','Chọn khoa');
   byId('input-doctor').textContent = (rooms.find(room => room.department === byId('input-dept').value) || {}).doctor || (byId('input-dept').value ? 'Chưa có thông tin' : 'Chọn phòng khám');
-  fillDepartments('header-department','Tất cả các khoa / phòng khám');
+  fillDepartments('header-department','Tất cả các khoa / phòng khám',true);
   byId('header-department').value = byId('filter-dept').value;
   byId('room-list').innerHTML = rooms.map(room => {
     const count = waiting.filter(p => p.department === room.department).length;
