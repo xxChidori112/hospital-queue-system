@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Màn hình chờ khám | CareQueue</title>
+  <style>
+    :root{font-family:"Segoe UI",Arial,sans-serif;color:#17344c;background:#eef7fc}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh}button,a{font:inherit}button{cursor:pointer}
+    header{background:#062c51;color:#fff;padding:20px clamp(18px,4vw,56px);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:13px}.mark{width:45px;height:45px;border-radius:13px;display:grid;place-items:center;color:#062c51;background:#ffca47;font-size:28px;font-weight:800}.brand strong{display:block;font-size:clamp(15px,2vw,21px)}.brand span{font-size:12px;color:#b5d4e5}
+    .header-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.clock{text-align:right;font-size:14px;color:#e2f2f7}.connection{font-size:12px;color:#a2ead3}.connection.offline{color:#ffd080}.header-actions a,.header-actions button{border:1px solid #ffffff50;border-radius:9px;color:#fff;background:#ffffff12;text-decoration:none;padding:9px 12px;font-size:12px}
+    main{max-width:1700px;margin:auto;padding:32px clamp(18px,4vw,56px) 40px}.intro{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:25px;flex-wrap:wrap}.eyebrow{color:#078bb9;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.intro h1{font-size:clamp(27px,3.6vw,46px);line-height:1.1;margin:8px 0;color:#092e4e}.intro p{color:#6e8796;margin:10px 0 0;font-size:14px}.summary{background:white;border:1px solid #d8eaf2;border-radius:14px;padding:12px 18px;font-size:14px;color:#547586}.summary strong{font-size:25px;color:#078db9;margin-right:6px}
+    .rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.room{background:#fff;border:1px solid #dceaf1;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px #1a607c0d}.room-head{background:#e1f4fc;padding:16px 20px;display:flex;justify-content:space-between;align-items:start;gap:10px}.room-head h2{font-size:16px;line-height:1.3;margin:4px 0 0}.room-number{font-size:12px;font-weight:800;letter-spacing:.08em;color:#087eaa}.count{white-space:nowrap;border-radius:20px;background:#fff;color:#1283a9;font-size:11px;font-weight:700;padding:6px 9px}.room-body{padding:18px 20px 20px}.label{text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:800;color:#7896a5}.active{color:#057eac;font-size:clamp(24px,3vw,38px);font-weight:800;line-height:1.3;margin:8px 0 17px;overflow-wrap:anywhere}.active.empty{font-size:16px;font-weight:600;color:#9aadb6}.queue{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.ticket{background:#f1f7fa;color:#385a6d;border-radius:8px;padding:7px 10px;font-weight:700;font-size:13px}.ticket.urgent{background:#fff0f1;color:#b94353}.none{font-size:13px;color:#98aab3}
+    footer{text-align:center;color:#7e9aa7;font-size:12px;padding:12px 20px 28px}.notice{background:#fff1e2;color:#9c521f;border-radius:10px;padding:11px 14px;margin:0 0 20px;font-size:13px}
+    @media(max-width:520px){header{padding:15px}.clock{text-align:left}.header-actions{width:100%}.rooms{grid-template-columns:1fr}.intro{margin-bottom:18px}main{padding-top:24px}.summary{padding:8px 14px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="mark" aria-hidden="true">+</div><div><strong>CareQueue · Màn hình chờ khám</strong><span>Phân hiệu Trường Đại học Giao thông Vận tải tại TP. Hồ Chí Minh</span></div></div>
+  <div class="header-actions"><div class="clock"><div id="clock"></div><div id="connection" class="connection" role="status">Đang kết nối...</div></div><button id="fullscreen" type="button">Toàn màn hình</button><a href="/">Về trang điều phối</a></div>
+</header>
+<main>
+  <div class="intro"><div><div class="eyebrow">Trung tâm y tế · UTC2</div><h1>Theo dõi lượt khám</h1><p>Vui lòng theo dõi mã phiếu và đến đúng phòng khi được gọi.</p></div><div class="summary"><strong id="total">—</strong> lượt đang chờ</div></div>
+  <div id="notice" class="notice" hidden>Mất kết nối với máy chủ. Dữ liệu bên dưới có thể chưa được cập nhật.</div>
+  <section id="rooms" class="rooms" aria-label="Tình trạng các phòng khám"></section>
+</main>
+<footer>Màn hình tự cập nhật mỗi 5 giây · Thời gian chờ có thể thay đổi theo mức độ ưu tiên.</footer>
+<script>
+'use strict';
+const rooms = [
+  {id:'Kham tong quat',number:'101',name:'Khoa Nội Tổng Hợp'},
+  {id:'Chan thuong',number:'102',name:'Khoa Ngoại Chấn Thương'},
+  {id:'Nhi',number:'103',name:'Khoa Nhi & Sơ Sinh'},
+  {id:'Mat',number:'201',name:'Khoa Mắt & Thị Lực'},
+  {id:'Tai mui hong',number:'202',name:'Khoa Tai Mũi Họng'},
+  {id:'Chan doan hinh anh',number:'301',name:'Chẩn Đoán Hình Ảnh'},
+  {id:'Cap cuu UTC2',number:'100',name:'Khoa Cấp Cứu UTC2'}
+];
+const legacyRooms = [{id:'Tim mach',number:'—',name:'Tim mạch (khoa cũ)'},{id:'Noi tiet',number:'—',name:'Nội tiết (khoa cũ)'}];
+const $ = id => document.getElementById(id);
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(state) {
+  const waiting = state.waiting || [], active = state.active || [];
+  const visible = [...rooms, ...legacyRooms.filter(room => [...waiting,...active].some(p=>p.department===room.id))];
+  $('total').textContent = waiting.length;
+  $('rooms').innerHTML = visible.map(room => {
+    const inRoom=active.filter(p=>p.department===room.id), queue=waiting.filter(p=>p.department===room.id);
+    const activeText=inRoom.length ? inRoom.map(p=>escapeHtml(p.ticket)).join(' · ') : 'Chưa có lượt đang khám';
+    const tickets=queue.slice(0,5).map(p=>'<span class="ticket'+(p.emergency?' urgent':'')+'">'+escapeHtml(p.ticket)+'</span>').join('');
+    return '<article class="room"><div class="room-head"><div><div class="room-number">PHÒNG '+escapeHtml(room.number)+'</div><h2>'+escapeHtml(room.name)+'</h2></div><span class="count">'+queue.length+' chờ</span></div><div class="room-body"><div class="label">Đang khám / đã gọi</div><div class="active'+(inRoom.length?'':' empty')+'">'+activeText+'</div><div class="label">Lượt chờ tiếp theo</div><div class="queue">'+(tickets || '<span class="none">Chưa có lượt chờ</span>')+(queue.length>5?'<span class="ticket">+'+(queue.length-5)+' lượt</span>':'')+'</div></div></article>';
+  }).join('');
+}
+async function refresh() {
+  try {
+    const response=await fetch('/api/waiting-display',{cache:'no-store'});
+    if(!response.ok) throw new Error('Mất kết nối');
+    render(await response.json());
+    $('connection').textContent='Đã kết nối · cập nhật '+new Date().toLocaleTimeString('vi-VN');
+    $('connection').classList.remove('offline');$('notice').hidden=true;
+  } catch (_) {
+    $('connection').textContent='Mất kết nối';$('connection').classList.add('offline');$('notice').hidden=false;
+  }
+}
+function clock() {$('clock').textContent=new Date().toLocaleString('vi-VN',{weekday:'long',hour:'2-digit',minute:'2-digit',second:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});}
+$('fullscreen').addEventListener('click',async()=>{
+  try {if(document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen();}
+  catch (_) {$('connection').textContent='Trình duyệt không hỗ trợ toàn màn hình';}
+});
+document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Thoát toàn màn hình':'Toàn màn hình';});
+clock();render({waiting:[],active:[]});refresh();setInterval(clock,1000);setInterval(refresh,5000);
+</script>
+</body>
+</html>

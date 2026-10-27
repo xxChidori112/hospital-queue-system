@@ -14,6 +14,7 @@ Phiên bản giao diện V2 có bảng điều phối mới, thống kê hàng �
 - Gọi trực tiếp một phiếu đang chờ, gọi lại bằng âm báo, đánh dấu vắng mặt, hủy phiếu chờ hoặc chuyển bệnh nhân đang khám sang hàng đợi khoa khác.
 - Hiển thị bảy phòng khám và tên bác sĩ theo mẫu, cùng số bệnh nhân đang chờ. Danh sách bác sĩ là thông tin tĩnh theo ảnh, không phản ánh ca trực thực tế.
 - Tiếp nhận theo năm sinh, giới tính, đối tượng, phòng khám và lý do khám; hiển thị bác sĩ theo phòng đã chọn. Tuổi là ước tính theo năm sinh vì chưa thu thập ngày và tháng sinh.
+- Màn hình chờ tại `/waiting` hiển thị mã đang khám, tối đa năm mã tiếp theo và tổng số lượt chờ theo phòng; tự cập nhật mỗi 5 giây. Dữ liệu riêng của màn hình này không bao gồm tên hay triệu chứng.
 
 Không tiếp nhận hoặc chuyển bệnh nhân mới vào hai khoa cũ Tim mạch và Nội tiết. Nếu dữ liệu còn hồ sơ thuộc hai khoa này, bộ lọc và gọi lượt vẫn hiển thị chúng để xử lý hồ sơ cũ; các phòng mới chưa có thời lượng riêng dùng mức ước tính mặc định 15 phút.
 Khi khởi động với cơ sở dữ liệu cũ, hệ thống bổ sung cột năm sinh, giới tính và đối tượng; hồ sơ cũ không có các thông tin này sẽ để trống.

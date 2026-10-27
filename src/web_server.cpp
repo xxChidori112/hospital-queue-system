@@ -159,6 +159,30 @@ std::string stateJson(const HospitalSystem& system) {
     return out.str();
 }
 
+// Màn hình chờ chỉ cần mã phiếu và khoa, không gửi hồ sơ bệnh nhân.
+std::string waitingDisplayJson(const HospitalSystem& system) {
+    std::ostringstream out;
+    out << "{\"waiting\":[";
+    bool first = true;
+    for (const auto& patient : system.waitingPatients()) {
+        if (!first) out << ',';
+        first = false;
+        out << "{\"ticket\":\"" << jsonEscape(patient.ticket) << "\",\"department\":\""
+            << jsonEscape(patient.department) << "\",\"emergency\":" << (patient.emergency ? "true" : "false") << '}';
+    }
+    out << "],\"active\":[";
+    first = true;
+    for (const auto& patient : system.allPatients()) {
+        if (patient.status != PatientStatus::InConsultation) continue;
+        if (!first) out << ',';
+        first = false;
+        out << "{\"ticket\":\"" << jsonEscape(patient.ticket) << "\",\"department\":\""
+            << jsonEscape(patient.department) << "\"}";
+    }
+    out << "]}";
+    return out.str();
+}
+
 Request readRequest(Socket client) {
     std::string raw;
     char buffer[4096];
@@ -220,6 +244,18 @@ void handleRequest(Socket client, HospitalSystem& system) {
             std::ostringstream html;
             html << file.rdbuf();
             sendResponse(client, 200, "text/html", html.str());
+            return;
+        }
+        if (request.method == "GET" && request.path == "/waiting") {
+            std::ifstream file("web/waiting.html", std::ios::binary);
+            if (!file) { sendResponse(client, 404, "text/plain", "Khong tim thay man hinh cho."); return; }
+            std::ostringstream html;
+            html << file.rdbuf();
+            sendResponse(client, 200, "text/html", html.str());
+            return;
+        }
+        if (request.method == "GET" && request.path == "/api/waiting-display") {
+            sendResponse(client, 200, "application/json", waitingDisplayJson(system));
             return;
         }
         if (request.method == "GET" && request.path == "/app.js") {

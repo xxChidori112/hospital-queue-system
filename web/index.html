@@ -83,6 +83,7 @@
     .utc-header-brand{flex:1;min-width:220px}.utc-header-brand strong{display:block;line-height:1.35;font-size:15px;text-transform:uppercase}.utc-header-brand span{display:block;margin-top:4px;color:#ffd159;font-weight:700;font-size:12px}
     .utc-header select{min-width:210px;max-width:280px;padding:11px 14px;border-radius:12px;border:1px solid #165485;background:#0b3d6d;color:#fff;font-size:12px;font-weight:600}
     .utc-header-status{text-align:right;font-size:11px;color:#c6e6f7;white-space:nowrap}.utc-header-status strong{display:block;color:#72e1c0;font-size:12px}.utc-header-notice{display:flex;align-items:center;gap:10px;border-top:1px solid #ffc43c;background:#0b3c69;padding:8px 20px;color:#e2f1fb;font-size:12px}.utc-header-notice b{color:#ffcf52}
+    .utc-waiting-link{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:10px;background:#ffbf36;color:#082f52;padding:10px 14px;font-size:12px;font-weight:800;text-decoration:none}.utc-waiting-link:hover{background:#ffd36b}.utc-waiting-link:focus-visible{outline:3px solid #fff;outline-offset:3px}
     @media(max-width:800px){.utc-header-main{flex-wrap:wrap;gap:12px}.utc-header-brand{min-width:0;flex:1}.utc-header-brand strong{font-size:12px}.utc-header select{flex:1;max-width:none;min-width:160px}.utc-header-status{text-align:left}.utc-header-logo{width:48px;height:48px}.utc-header-notice{font-size:11px;padding:8px 14px}}
     .room-section{padding:26px clamp(20px,4vw,40px);background:#f1f7fa;border-top:1px solid #dceaf1}
     .room-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
@@ -99,6 +100,7 @@
       <div class="utc-header-brand"><strong>Phân hiệu Trường Đại học Giao thông Vận tải tại TP. Hồ Chí Minh</strong><span>Trung tâm Y tế &amp; Chăm sóc sức khỏe SV – CBNV · CareQueue</span></div>
       <select id="header-department" aria-label="Chọn khoa để lọc hàng đợi"><option value="">Tất cả các khoa / phòng khám</option></select>
       <div class="utc-header-status"><strong id="header-connection">Đang kết nối</strong><span id="header-clock"></span></div>
+      <a href="/waiting" target="_blank" rel="noopener" class="utc-waiting-link">Màn hình chờ ↗</a>
     </div>
     <div class="utc-header-notice"><b>THÔNG BÁO</b><span>Tiếp nhận, phân luồng và điều phối lượt khám bệnh.</span></div>
   </header>
