@@ -13,6 +13,9 @@
     main{max-width:1700px;margin:auto;padding:32px clamp(18px,4vw,56px) 40px}.intro{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:25px;flex-wrap:wrap}.eyebrow{color:#078bb9;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.intro h1{font-size:clamp(27px,3.6vw,46px);line-height:1.1;margin:8px 0;color:#092e4e}.intro p{color:#6e8796;margin:10px 0 0;font-size:14px}.summary{background:white;border:1px solid #d8eaf2;border-radius:14px;padding:12px 18px;font-size:14px;color:#547586}.summary strong{font-size:25px;color:#078db9;margin-right:6px}
     .rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.room{background:#fff;border:1px solid #dceaf1;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px #1a607c0d}.room-head{background:#e1f4fc;padding:16px 20px;display:flex;justify-content:space-between;align-items:start;gap:10px}.room-head h2{font-size:16px;line-height:1.3;margin:4px 0 0}.room-number{font-size:12px;font-weight:800;letter-spacing:.08em;color:#087eaa}.count{white-space:nowrap;border-radius:20px;background:#fff;color:#1283a9;font-size:11px;font-weight:700;padding:6px 9px}.room-body{padding:18px 20px 20px}.label{text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:800;color:#7896a5}.active{color:#057eac;font-size:clamp(24px,3vw,38px);font-weight:800;line-height:1.3;margin:8px 0 17px;overflow-wrap:anywhere}.active.empty{font-size:16px;font-weight:600;color:#9aadb6}.queue{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.ticket{background:#f1f7fa;color:#385a6d;border-radius:8px;padding:7px 10px;font-weight:700;font-size:13px}.ticket.urgent{background:#fff0f1;color:#b94353}.none{font-size:13px;color:#98aab3}
     footer{text-align:center;color:#7e9aa7;font-size:12px;padding:12px 20px 28px}.notice{background:#fff1e2;color:#9c521f;border-radius:10px;padding:11px 14px;margin:0 0 20px;font-size:13px}
+    .waiting-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:22px;align-items:start}.waiting-layout .rooms{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+    .meme-panel{position:sticky;top:20px;background:white;border:1px solid #dceaf1;border-radius:18px;overflow:hidden}.meme-heading{padding:18px 20px;background:#062c51;color:#fff}.meme-heading h2{font-size:18px;margin:0}.meme-heading p{color:#bddde9;font-size:12px;margin:6px 0 0}.meme-stage{height:260px;background:#e7f4fa;display:grid;place-items:center;padding:12px}.meme-stage img{max-width:100%;max-height:236px;object-fit:contain;border-radius:10px}.meme-stage p{color:#68899c;text-align:center;font-size:14px}.meme-content{padding:16px 18px}.meme-caption{font-size:14px;font-weight:700;margin:0 0 12px}.meme-controls{display:flex;gap:8px}.meme-controls button{flex:1;background:#e9f6fc;border:1px solid #cde7f2;border-radius:9px;padding:9px;color:#087ca4;font-size:12px;font-weight:700}.meme-source{display:inline-block;font-size:11px;color:#7897a6;margin-top:12px}
+    @media(max-width:1050px){.waiting-layout{grid-template-columns:1fr}.meme-panel{position:static;max-width:500px;width:100%;margin:auto}.meme-stage{height:230px}.meme-stage img{max-height:205px}}
     @media(max-width:520px){header{padding:15px}.clock{text-align:left}.header-actions{width:100%}.rooms{grid-template-columns:1fr}.intro{margin-bottom:18px}main{padding-top:24px}.summary{padding:8px 14px}}
   </style>
 </head>
@@ -24,7 +27,14 @@
 <main>
   <div class="intro"><div><div class="eyebrow">Trung tâm y tế · UTC2</div><h1>Theo dõi lượt khám</h1><p>Vui lòng theo dõi mã phiếu và đến đúng phòng khi được gọi.</p></div><div class="summary"><strong id="total">—</strong> lượt đang chờ</div></div>
   <div id="notice" class="notice" hidden>Mất kết nối với máy chủ. Dữ liệu bên dưới có thể chưa được cập nhật.</div>
-  <section id="rooms" class="rooms" aria-label="Tình trạng các phòng khám"></section>
+  <div class="waiting-layout">
+    <section id="rooms" class="rooms" aria-label="Tình trạng các phòng khám"></section>
+    <aside class="meme-panel" aria-labelledby="meme-heading">
+      <div class="meme-heading"><h2 id="meme-heading">Một chút vui trong lúc chờ</h2><p>GIF vui · Không có âm thanh</p></div>
+      <div class="meme-stage"><img id="meme-image" alt="" referrerpolicy="no-referrer"><p id="meme-status" role="status">Đang tải GIF...</p></div>
+      <div class="meme-content"><p id="meme-caption" class="meme-caption"></p><div class="meme-controls"><button id="meme-toggle" type="button">Tạm dừng</button><button id="meme-next" type="button">Tiếp theo →</button></div><a id="meme-source" class="meme-source" target="_blank" rel="noopener noreferrer">Nguồn: GIPHY</a></div>
+    </aside>
+  </div>
 </main>
 <footer>Màn hình tự cập nhật mỗi 5 giây · Thời gian chờ có thể thay đổi theo mức độ ưu tiên.</footer>
 <script>
@@ -70,6 +80,24 @@ $('fullscreen').addEventListener('click',async()=>{
   catch (_) {$('connection').textContent='Trình duyệt không hỗ trợ toàn màn hình';}
 });
 document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Thoát toàn màn hình':'Toàn màn hình';});
+const memes = [
+  {url:'https://media.giphy.com/media/S2D753TsCrbPsMRTwK/giphy.gif',source:'https://giphy.com/gifs/thumbs-up-cat-car-awesome-S2D753TsCrbPsMRTwK',caption:'Một chiếc like tiếp năng lượng!',alt:'Mèo giơ ngón tay cái vui vẻ'},
+  {url:'https://media.giphy.com/media/Yt09iFvD9u5AQ/giphy.gif',source:'https://giphy.com/gifs/cat-kitten-Yt09iFvD9u5AQ',caption:'Giữ tinh thần vui vẻ trong lúc chờ nhé!',alt:'Mèo con phấn khích chuyển động vui nhộn'}
+];
+let memeIndex=0, memePaused=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function showMeme() {
+  const meme=memes[memeIndex], image=$('meme-image');
+  image.hidden=true;image.removeAttribute('src');
+  $('meme-caption').textContent=meme.caption;$('meme-source').href=meme.source;
+  $('meme-status').hidden=false;$('meme-status').textContent=memePaused?'GIF đã tạm dừng.':'Đang tải GIF...';
+  $('meme-toggle').textContent=memePaused?'Phát GIF':'Tạm dừng';
+  if(!memePaused){image.alt=meme.alt;image.src=meme.url;}
+}
+$('meme-image').addEventListener('load',()=>{if(!memePaused){$('meme-image').hidden=false;$('meme-status').hidden=true;}});
+$('meme-image').addEventListener('error',()=>{if(!memePaused){$('meme-image').hidden=true;$('meme-status').hidden=false;$('meme-status').textContent='Không tải được GIF. Vui lòng thử ảnh tiếp theo.';}});
+$('meme-toggle').addEventListener('click',()=>{memePaused=!memePaused;showMeme();});
+$('meme-next').addEventListener('click',()=>{memeIndex=(memeIndex+1)%memes.length;showMeme();});
+showMeme();setInterval(()=>{if(!memePaused){memeIndex=(memeIndex+1)%memes.length;showMeme();}},12000);
 clock();render({waiting:[],active:[]});refresh();setInterval(clock,1000);setInterval(refresh,5000);
 </script>
 </body>
