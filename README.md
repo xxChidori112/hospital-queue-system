@@ -1,5 +1,7 @@
 # CareQueue V2 — Hệ thống xếp hàng khám bệnh & cấp cứu
 
+Bản C++ cơ bản chia Head / Body / Main: [examples/hang_doi_co_ban](examples/hang_doi_co_ban/README.md). Hướng dẫn làm việc theo 25 task cho 5 thành viên: [docs/HUONG_DAN_PHAN_CONG.md](docs/HUONG_DAN_PHAN_CONG.md).
+
 Phiên bản giao diện V2 có bảng điều phối mới, thống kê hàng đợi, bộ lọc hồ sơ, tiếp nhận nhanh, gọi lượt theo khoa và lịch sử gọi gần đây. Giao diện chạy trên trình duyệt và kết nối máy chủ C++17 hiện có.
 
 Ứng dụng web chạy cục bộ hoặc triển khai bằng Docker. Giao diện HTML/CSS/JavaScript gọi máy chủ C++17; logic tiếp tục dùng Queue mảng vòng tự cài đặt, Priority Queue dạng heap và Deque cho lịch sử gọi.

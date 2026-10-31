@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_executable(hang_doi_co_ban
+    examples/hang_doi_co_ban/main.cpp
+    examples/hang_doi_co_ban/HangDoiBenhVien.cpp
+)
+
 add_executable(hospital_queue
     src/main.cpp
     src/hospital_system.cpp
